@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<link rel="stylesheet" href="./assets/style.css">
+<script src="index.js"></script>
+<body>
+    <center>
+        <h1>Echo Gallery</h1>
+    </center>
+
+<!-- Navigation Bar -->
+<div class="nav_bar">
+    <div class="top_page_nav">
+        <ul> <!-- List for navigation bar text -->
+            <li><button id="allImages" class="active">All</a></li> <!-- Navigation bar redirects to different pages-->
+            <li><button id="foodImages">Food</a></li>
+            <li><button id="fashionImages">Fashion</a></li>
+            <li><button id="sportsImages">Sports</a></li>
+            <li><button id="informativeImages">Informative</a></li>
+            <li><button id="funnyImages">Funny</a></li>
+            <li><button id="historyImages">History</a></li>
+        </ul>
+    </div>
+    <div id="bottom_page_nav">
+        <ul>
+            <li style="float:right"><button id="openModalButton">Upload Image</button></li>
+            <!-- Upload Window -->
+                <div id="uploadModal" class="modal">
+                <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Add Information</h2>
+                <form id="imageUploadForm">
+                <label for="imageUpload">Image preview:</label>
+                <input type="file" id="imageUpload" accept="image/*">
+                <img id="imagePreview" src="#" alt="Image Preview" style="display:none;">
+        
+                <label for="authorName">Author name:</label>
+                <input type="text" id="authorName">
+        
+                <label for="category">Category:</label>
+                <select id="category">
+                    <option value="food">Food</option>
+                    <option value="fashion">Fashion</option>
+                    <option value="sports">Sports</option>
+                    <option value="informative">Informative</option>
+                    <option value="funny">Funny</option>
+                    <option value="history">History</option>
+                <option value="none">None</option>
+                </select>
+        
+                <label for="imageInfo">Information:</label>
+                <textarea id="imageInfo"></textarea>
+        
+                <button type="button" id="cancelUpload">Cancel</button>
+                 <button type="submit">Upload</button>
+        </ul>
+      </form>
+    </div>
+</div>
+
+
+<!-- Header -->
+<header>
+
+</header>
+
+<!-- Page Content -->
+
+<div class="firstImage">
+
+</div>
+
+<div class="secondImage">
+
+</div>
+
+<div class="thirdImage">
+
+</div>
+
+
+</body>
+</html>

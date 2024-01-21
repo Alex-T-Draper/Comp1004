@@ -1,0 +1,127 @@
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0,0.4);
+  }
+  
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+  }
+  
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+/* Navigation Bar */
+
+.nav_bar {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    overflow: hidden;
+    background-color: #939499; /*changes background colour of nav bar*/
+    font-family: Arial, Helvetica, sans-serif; /* Changes font for text */
+}
+
+li {
+    display: inline-block; /* Makes list items horizontal */
+    align-items: center;
+    border-right: 1px solid #bbb;
+}
+
+li a {
+    display: block;
+    color: white; 
+    text-align: center;
+    padding: 14px 100px;
+    text-decoration: none;
+}
+
+.active { /* Active page */
+    background-color: #04AA6D; /* Active page shows green */
+}
+
+/* Top Navigation Bar */
+.top_page_nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #939499; /* Background color of nav bar */
+    text-align: center; /* Centers the inline-block list items */
+    width: 100%; /* Ensures the ul takes the full width of its parent */
+}
+
+.top_page_nav li {
+    display: inline-block; /* Makes list items horizontal */
+    border-right: 1px solid #bbb;
+}
+
+.top_page_nav button {
+    background: none; /* Removes default button background */
+    border: none; /* Removes default button border */
+    color: white;
+    text-align: center; /* Ensures text in the button is centered */
+    padding: 14px 16px; /* Adjust padding to control the spacing around each link */
+    text-decoration: none;
+    font-size: 17px;
+    cursor: pointer; /* Changes cursor to pointer when hovering over the button */
+    width: 100%; /* Makes the button fill the li if necessary */
+}
+
+.top_page_nav .active { /* Active page */
+    background-color: #04AA6D; /* Active page shows green */
+}
+
+.top_page_nav button:hover {
+    background-color: #04AA6D; /* Change the color on hover */
+}
+
+/* Bottom Navigation Bar */
+#bottom_page_nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    position: fixed;
+    bottom: 0;
+    right: 0; /* Align to the bottom-right corner */
+    background-color: #939499; /* Background color of nav bar */
+}
+
+#bottom_page_nav li {
+    display: inline; /* Aligns the list item inline */
+}
+
+#bottom_page_nav li button {
+    background: none; /* Removes default button background */
+    border: none; /* Removes default button border */
+    color: #f2f2f2; /* Text color */
+    padding: 14px 16px; /* Adjust the padding as needed */
+    text-decoration: none;
+    font-size: 17px;
+    cursor: pointer; /* Changes cursor to pointer when hovering over the button */
+}
+
+#bottom_page_nav li button:hover {
+    background-color: #04AA6D; /* Change the color on hover */
+}
