@@ -1,3 +1,65 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* General body styling */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+    padding-top: 30px; /* Space for title */
+    padding-bottom: 60px; /* Space for bottom navigation bar */
+}
+
+/* Header styling */
+h1 {
+    background: #fff;
+    padding: 20px 0;
+    color: #333;
+    margin-bottom: 20px; /* Space below the title */
+}
+
+h2 {
+    padding-left: 60px;
+}
+
+/* Navigation Bar */
+.nav_bar {
+    list-style-type: none;
+    background-color: #939499;
+    text-align: center;
+    padding: 10px 0;
+    width: 100%;
+    z-index: 10; /* High z-index to ensure nav bar is above other content */
+}
+
+/* Fixed Navigation Bar */
+.nav_bar.fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.nav_bar li {
+    display: inline;
+    margin-right: 20px;
+}
+
+.nav_bar button {
+    background: none;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.nav_bar .active {
+    background-color: #04AA6D;
+}
+
+/* Upload Modal */
 .modal {
     display: none;
     position: fixed;
@@ -7,121 +69,158 @@
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgb(0,0,0,0.4);
-  }
-  
-  .modal-content {
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
     background-color: #fefefe;
     margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 50%;
-  }
-  
-  .close {
+    width: 80%;
+    max-width: 500px;
+}
+
+.close {
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
-  }
-  
-  .close:hover,
-  .close:focus {
+}
+
+.close:hover,
+.close:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;
-  }
-  
-/* Navigation Bar */
-
-.nav_bar {
-    list-style-type: none;
-    margin: 0px;
-    padding: 0px;
-    overflow: hidden;
-    background-color: #939499; /*changes background colour of nav bar*/
-    font-family: Arial, Helvetica, sans-serif; /* Changes font for text */
 }
 
-li {
-    display: inline-block; /* Makes list items horizontal */
-    align-items: center;
-    border-right: 1px solid #bbb;
-}
-
-li a {
-    display: block;
-    color: white; 
+/* Information Box */
+.information-box {
+    background-color: #f3f3f3;
+    padding: 20px;
+    margin-top: 20px;
+    font-size: 0.9em;
     text-align: center;
-    padding: 14px 100px;
-    text-decoration: none;
 }
 
-.active { /* Active page */
-    background-color: #04AA6D; /* Active page shows green */
+/* Image Gallery */
+.image-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjust '200px' to the min width of each image */
+    gap: 20px; /* Adjust the gap between images if necessary */
+    justify-items: center; /* Center items in the grid */
+    align-items: center; /* Align items vertically */
+    padding: 20px; /* Padding around the gallery */
 }
 
-/* Top Navigation Bar */
-.top_page_nav ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: #939499; /* Background color of nav bar */
-    text-align: center; /* Centers the inline-block list items */
-    width: 100%; /* Ensures the ul takes the full width of its parent */
+/* Individual Image Items */
+.image-grid-item {
+    position: relative; /* For absolute positioning of children */
+    width: 200px; /* Set a fixed width for the images */
+    height: auto; /* Keep the height auto to maintain aspect ratio */
+    margin: 0 auto; /* Center if grid column width is larger than image width */
 }
 
-.top_page_nav li {
-    display: inline-block; /* Makes list items horizontal */
-    border-right: 1px solid #bbb;
+/* Styling for Images Within Grid Items */
+.image-grid-item img {
+    width: 100%; /* Make image fill the width of the container */
+    height: auto; /* Maintain aspect ratio */
+    display: block; /* Remove extra space below image */
 }
 
-.top_page_nav button {
-    background: none; /* Removes default button background */
-    border: none; /* Removes default button border */
-    color: white;
-    text-align: center; /* Ensures text in the button is centered */
-    padding: 14px 16px; /* Adjust padding to control the spacing around each link */
-    text-decoration: none;
-    font-size: 17px;
-    cursor: pointer; /* Changes cursor to pointer when hovering over the button */
-    width: 100%; /* Makes the button fill the li if necessary */
-}
-
-.top_page_nav .active { /* Active page */
-    background-color: #04AA6D; /* Active page shows green */
-}
-
-.top_page_nav button:hover {
-    background-color: #04AA6D; /* Change the color on hover */
+/* Down Button Style */
+.image-grid-item .toggle-context {
+    position: absolute; /* Position relative to the image-grid-item */
+    bottom: 5px; /* 5px from the bottom */
+    right: 5px; /* 5px from the right */
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+    color: white; /* White color for the arrow icon */
+    border: none; /* No border */
+    padding: 5px; /* Padding around the arrow icon */
+    cursor: pointer; /* Pointer cursor on hover */
 }
 
 /* Bottom Navigation Bar */
-#bottom_page_nav ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
+.bottom-nav {
     position: fixed;
     bottom: 0;
-    right: 0; /* Align to the bottom-right corner */
-    background-color: #939499; /* Background color of nav bar */
+    width: 100%;
+    background-color: #939499;
+    z-index: 1000;
 }
 
-#bottom_page_nav li {
-    display: inline; /* Aligns the list item inline */
+.bottom-nav ul {
+    list-style-type: none;
+    text-align: center;
+    padding: 10px 0;
 }
 
-#bottom_page_nav li button {
-    background: none; /* Removes default button background */
-    border: none; /* Removes default button border */
-    color: #f2f2f2; /* Text color */
-    padding: 14px 16px; /* Adjust the padding as needed */
-    text-decoration: none;
-    font-size: 17px;
-    cursor: pointer; /* Changes cursor to pointer when hovering over the button */
+.bottom-nav li {
+    display: inline;
+    margin-right: 20px;
 }
 
-#bottom_page_nav li button:hover {
-    background-color: #04AA6D; /* Change the color on hover */
+.bottom-nav button {
+    background: none;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
 }
+
+.bottom-nav button:hover {
+    background-color: #04AA6D;
+}
+
+/* Upload Image Button */
+#openModalButton {
+    background-color: #04AA6D;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+
+#openModalButton:hover {
+    background-color: #037d56;
+}
+
+/* Additional styles for responsiveness */
+@media (max-width: 768px) {
+    .image-gallery {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .image-gallery {
+        grid-template-columns: 1fr;
+    }
+
+    .nav_bar li, .bottom-nav li {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .nav_bar button, .bottom-nav button {
+        display: block;
+        width: 100%;
+    }
+}
+
+/* Image Context Button Clicked */
+.image-grid-item.enlarged {
+    grid-column: span 3; /* Or however many columns you want it to span */
+    transition: transform 0.3s ease;
+  }
+  
+  .image-grid-item.enlarged img {
+    width: 100%; /* Adjust if you want to set a specific width */
+    height: auto; /* Maintain aspect ratio */
+  }

@@ -16,15 +16,16 @@
 <div class="nav_bar">
     <div class="top_page_nav">
         <ul> <!-- List for navigation bar text -->
-            <li><button id="allImages" class="active">All</a></li> <!-- Navigation bar redirects to different pages-->
-            <li><button id="foodImages">Food</a></li>
-            <li><button id="fashionImages">Fashion</a></li>
-            <li><button id="sportsImages">Sports</a></li>
-            <li><button id="informativeImages">Informative</a></li>
-            <li><button id="funnyImages">Funny</a></li>
-            <li><button id="historyImages">History</a></li>
+            <li><button id="allImages" class="nav-btn active" data-target="allImagesHeader">All</button></li>
+            <li><button id="foodImages" class="nav-btn" data-target="foodImagesHeader">Food</button></li>
+            <li><button id="fashionImages" class="nav-btn" data-target="fashionImagesHeader">Fashion</button></li>
+            <li><button id="sportsImages" class="nav-btn" data-target="sportsImagesHeader">Sports</button></li>
+            <li><button id="informativeImages" class="nav-btn" data-target="informativeImagesHeader">Informative</button></li>
+            <li><button id="funnyImages" class="nav-btn" data-target="funnyImagesHeader">Funny</button></li>
+            <li><button id="historyImages" class="nav-btn" data-target="historyImagesHeader">History</button></li>
         </ul>
     </div>
+    <!-- UPLOAD BUTTON -->
     <div id="bottom_page_nav">
         <ul>
             <li style="float:right"><button id="openModalButton">Upload Image</button></li>
@@ -49,7 +50,7 @@
                     <option value="informative">Informative</option>
                     <option value="funny">Funny</option>
                     <option value="history">History</option>
-                <option value="none">None</option>
+                    <option value="none">None</option>
                 </select>
         
                 <label for="imageInfo">Information:</label>
@@ -62,26 +63,185 @@
     </div>
 </div>
 
-
-<!-- Header -->
-<header>
-
-</header>
-
 <!-- Page Content -->
 
-<div class="firstImage">
+<!-- Header -->
+
+<!-- Food Category -->
+<header>
+    <h2 id="foodImagesHeader">Food</h2>
+</header>
+
+
+<!-- Image Gallery -->
+<div class="image-gallery">
+    <!-- First Image -->
+    <div class="image-grid-item" data-author="Alex" data-category="Food" data-description="Description of the image">
+        <img src="./images/vegan_blackberry_cashew_frosting.jpg" alt="Vegan Blackberry Cashew Frosting Cupcakes">
+        <button class="toggle-context">▼</button>
+    </div>
+
+    <!-- Second Image -->
+    <div class="image-grid-item" data-author="Sean" data-category="Food" data-description="Description of the image">
+        <img src="./images/sushi_platter.jpg" alt="Sushi Platter">
+        <button class="toggle-context">▼</button>
+    </div>
+
+    <!-- Third Image -->
+    <div class="image-grid-item" data-author="Alex" data-category="Food" data-description="Description of the image">
+        <img src="./images/bagel_soft_cheese_salmon.jpg" alt="Bagel with soft cheese and salmon">
+        <button class="toggle-context">▼</button>
+    </div>
 
 </div>
 
-<div class="secondImage">
+<!-- Fashion Category -->
+<header>
+    <h2 id="fashionImagesHeader">Fashion</h2>
+</header>
+
+
+<!-- Image Gallery -->
+<div class="image-gallery">
+
+    <!-- First Image -->
+    <div class="image-grid-item" data-author="Alex" data-category="Fashion" data-description="Description of the image">
+        <img src="./images/paris_fashion_week.jpg" alt="Paris Fashion Week">
+        <button class="toggle-context">▼</button>
+    </div>
+
+    <!-- Second Image -->
+    <div class="image-grid-item" data-author="Sean" data-category="Fashion" data-description="Description of the image">
+        <img src="./images/london_fashion_week_2024.webp" alt="London Fashion Week 2024">
+        <button class="toggle-context">▼</button>
+    </div>
+    
+    <!-- Third Image -->
+    <div class="image-grid-item" data-author="Alex" data-category="Fashion" data-description="Description of the image">
+        <img src="./images/tokyo_fashion_week_2018.jpg" alt="Tokyo Fashion Week 2018">
+        <button class="toggle-context">▼</button>
+    </div>
 
 </div>
 
-<div class="thirdImage">
+<!-- Sports Category -->
+<header>
+    <h2 id="sportsImagesHeader">Sports</h2>
+</header>
+
+<div class="image-gallery"> 
+
+    <!-- First Image -->
+    <div class="image-grid-item" data-author="Alex" data-category="Sports" data-description="Description of the image">
+        <img src="./images/ronaldo.jpg" alt="Cristiano Ronaldo">
+        <button class="toggle-context">▼</button>
+    </div>
+
+    <!-- Second Image -->
+    <div class="image-grid-item" data-author="Sean" data-category="Sports" data-description="Description of the image">
+        <img src="./images/michael_jordan.jpg" alt="Michael Jordan">
+        <button class="toggle-context">▼</button>
+    </div>
+    
+    <!-- Third Image -->
+    <div class="image-grid-item" data-author="Alex" data-category="Sports" data-description="Description of the image">
+        <img src="./images/mike_tyson.jpg" alt="Mike Tyson">
+        <button class="toggle-context">▼</button>
+    </div>
 
 </div>
 
+<!-- Informative Category -->
+<header>
+    <h2 id="informativeImagesHeader">Informative</h2>
+</header>
+
+<div class="image-gallery"> 
+
+    <!-- First Image -->
+    <div class="image-grid-item" data-author="Alex" data-category="Fashion" data-description="Description of the image">
+        <img src="./images/ronaldo.jpg" alt="Cristiano Ronaldo">
+        <button class="toggle-context">▼</button>
+    </div>
+
+    <!-- Second Image -->
+    <div class="image-grid-item" data-author="Sean" data-category="Fashion" data-description="Description of the image">
+        <img src="./images/michael_jordan.jpg" alt="Michael Jordan">
+        <button class="toggle-context">▼</button>
+    </div>
+    
+    <!-- Third Image -->
+    <div class="image-grid-item" data-author="Alex" data-category="Fashion" data-description="Description of the image">
+        <img src="./images/mike_tyson.jpg" alt="Mike Tyson">
+        <button class="toggle-context">▼</button>
+    </div>
+
+</div>
+
+<!-- Funny Category -->
+<header>
+    <h2 id="funnyImagesHeader">Funny</h2>
+</header>
+
+<div class="image-gallery"> 
+
+    <!-- First Image -->
+    <div class="image-grid-item" data-author="Alex" data-category="Funny" data-description="Description of the image">
+        <img src="./images/bald_cat.jpg" alt="Bald Cat">
+        <button class="toggle-context">▼</button>
+    </div>
+
+    <!-- Second Image -->
+    <div class="image-grid-item" data-author="Sean" data-category="Funny" data-description="Description of the image">
+        <img src="./images/emo_dog.jpg" alt="Emo Dog">
+        <button class="toggle-context">▼</button>
+    </div>
+    
+    <!-- Third Image -->
+    <div class="image-grid-item" data-author="Alex" data-category="Funny" data-description="Description of the image">
+        <img src="./images/kid_on_motorbike.jpg" alt="Kid on motorbike">
+        <button class="toggle-context">▼</button>
+    </div>
+
+</div>
+
+<!-- History Category -->
+<header>
+    <h2 id="historyImagesHeader">History</h2>
+</header>
+
+<div class="image-gallery"> 
+
+    <!-- First Image -->
+    <div class="image-grid-item" data-author="Alex" data-category="Fashion" data-description="Description of the image">
+        <img src="./images/ronaldo.jpg" alt="Cristiano Ronaldo">
+        <button class="toggle-context">▼</button>
+    </div>
+
+    <!-- Second Image -->
+    <div class="image-grid-item" data-author="Sean" data-category="Fashion" data-description="Description of the image">
+        <img src="./images/michael_jordan.jpg" alt="Michael Jordan">
+        <button class="toggle-context">▼</button>
+    </div>
+    
+    <!-- Third Image -->
+    <div class="image-grid-item" data-author="Alex" data-category="Fashion" data-description="Description of the image">
+        <img src="./images/mike_tyson.jpg" alt="Mike Tyson">
+        <button class="toggle-context">▼</button>
+    </div>
+
+</div>
+
+<!-- Image Context Modal -->
+<div id="imageContextModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeImageContextModal()">&times;</span>
+        <h2>Image Information</h2>
+        <div id="imageContextContent">
+            <!-- Content will be filled in by JavaScript -->
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
