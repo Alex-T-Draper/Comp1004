@@ -1,41 +1,83 @@
+import { db, storage } from './firebase-init.js';
+import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
 document.addEventListener('DOMContentLoaded', function() {
-  // Modal elements for image upload
-  var modal = document.getElementById('uploadModal');
-  var btn = document.getElementById('openModalButton'); // Button to open the modal
-  var span = document.getElementsByClassName("close")[0]; // Close button for the modal
+    var modal = document.getElementById('uploadModal');
+    var btn = document.getElementById('openModalButton');
+    var span = document.getElementsByClassName("close")[0];
 
-  // Open upload modal event
-  btn.onclick = function() {
-      modal.style.display = "block";
-  }
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
 
-  // Close upload modal events
-  span.onclick = function() {
-      modal.style.display = "none";
-  }
-  window.onclick = function(event) {
-      if (event.target === modal) {
-          modal.style.display = "none";
-      }
-  }
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
 
-  // Image preview event
-  document.getElementById('imageUpload').addEventListener('change', function(event) {
-      var reader = new FileReader();
-      reader.onload = function() {
-          var output = document.getElementById('imagePreview');
-          output.src = reader.result;
-          output.style.display = 'block';
-      };
-      reader.readAsDataURL(event.target.files[0]);
-  });
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    }
 
-  // Form submission event
-  document.getElementById('imageUploadForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      // Add form submission logic here
-      modal.style.display = "none";
-  });
+    document.getElementById('imageUpload').addEventListener('change', function(event) {
+        var reader = new FileReader();
+        reader.onload = function() {
+            var output = document.getElementById('imagePreview');
+            output.src = reader.result;
+            output.style.display = 'block';
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    });
+
+    document.getElementById('imageUploadForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+    
+        const fileInput = document.getElementById('imageUpload');
+        const categoryInput = document.getElementById('imageCategory');
+        const descriptionInput = document.getElementById('imageInfo');
+        const authorInput = document.getElementById('authorName'); // Assuming you have an input field with the ID 'authorName'
+    
+        const file = fileInput.files[0];
+        const category = categoryInput.value;
+        const description = descriptionInput.value;
+        const author = authorInput.value; // Retrieve the value of the author input field
+    
+        if (file) {
+            try {
+                // Correct storage reference for Firebase Modular
+                const imageRef = storageRef(storage, `images/${file.name}`);
+                const snapshot = await uploadBytes(imageRef, file);
+                const url = await getDownloadURL(imageRef);
+    
+                // Correct Firestore reference for Firebase Modular
+                const imagesCollectionRef = collection(db, 'images');
+                const docRef = await addDoc(imagesCollectionRef, {
+                    name: file.name,
+                    category: category,
+                    description: description,
+                    author: author, // Store the author's name
+                    url: url
+                });
+    
+                console.log('Document written with ID: ', docRef.id);
+                alert('Image uploaded successfully!');
+    
+                document.getElementById('imageUploadForm').reset();
+                document.getElementById('imagePreview').style.display = 'none';
+    
+            } catch (error) {
+                console.error('Error during the upload:', error);
+                alert('An error occurred during the upload.');
+            }
+        } else {
+            alert('Please select a file to upload.');
+        }
+    
+        // Close the modal
+        modal.style.display = "none";
+    });
 
   // Cancel upload event
   document.getElementById('cancelUpload').addEventListener('click', function() {

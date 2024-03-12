@@ -6,7 +6,7 @@
     <title>Document</title>
 </head>
 <link rel="stylesheet" href="./assets/style.css">
-<script src="index.js"></script>
+
 <body>
     <center>
         <h1>Echo Gallery</h1>
@@ -29,37 +29,39 @@
     <div id="bottom_page_nav">
         <ul>
             <li style="float:right"><button id="openModalButton">Upload Image</button></li>
-            <!-- Upload Window -->
-                <div id="uploadModal" class="modal">
-                <div class="modal-content">
+        </ul>
+        <!-- Upload Window -->
+        <div id="uploadModal" class="modal">
+            <div class="modal-content">
                 <span class="close">&times;</span>
                 <h2>Add Information</h2>
                 <form id="imageUploadForm">
-                <label for="imageUpload">Image preview:</label>
-                <input type="file" id="imageUpload" accept="image/*">
-                <img id="imagePreview" src="#" alt="Image Preview" style="display:none;">
-        
-                <label for="authorName">Author name:</label>
-                <input type="text" id="authorName">
-        
-                <label for="category">Category:</label>
-                <select id="category">
-                    <option value="food">Food</option>
-                    <option value="fashion">Fashion</option>
-                    <option value="sports">Sports</option>
-                    <option value="informative">Informative</option>
-                    <option value="funny">Funny</option>
-                    <option value="history">History</option>
-                    <option value="none">None</option>
-                </select>
-        
-                <label for="imageInfo">Information:</label>
-                <textarea id="imageInfo"></textarea>
-        
-                <button type="button" id="cancelUpload">Cancel</button>
-                 <button type="submit">Upload</button>
-        </ul>
-      </form>
+                    <label for="imageUpload">Image preview:</label>
+                    <input type="file" id="imageUpload" accept="image/*">
+                    <img id="imagePreview" src="#" alt="Image Preview" style="display:none;">
+            
+                    <label for="authorName">Author name:</label>
+                    <input type="text" id="authorName">
+            
+                    <label for="imageCategory">Category:</label>
+                    <select id="imageCategory">
+                        <option value="food">Food</option>
+                        <option value="fashion">Fashion</option>
+                        <option value="sports">Sports</option>
+                        <option value="informative">Informative</option>
+                        <option value="funny">Funny</option>
+                        <option value="history">History</option>
+                        <option value="none">None</option>
+                    </select>
+            
+                    <label for="imageInfo">Information:</label>
+                    <textarea id="imageInfo"></textarea>
+                    
+                    <button type="button" id="cancelUpload">Cancel</button>
+                    <button type="submit" id="buttonUpload">Upload</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -243,5 +245,8 @@
     </div>
 </div>
 
+
+<script type="module" src="firebase-init.js"></script>
+<script type="module" src="index.js"></script>
 </body>
 </html>
