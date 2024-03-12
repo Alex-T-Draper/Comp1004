@@ -25,6 +25,15 @@ h2 {
     padding-left: 60px;
 }
 
+.website-description {
+    text-align: center;
+    width: 50%;
+    border: 3px solid #888;
+    padding: 10px; /* Add padding to the inside of the border */
+    margin: auto; /* Add margin to the outside of the border */
+}
+
+
 /* Navigation Bar */
 .nav_bar {
     list-style-type: none;
