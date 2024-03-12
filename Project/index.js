@@ -6,7 +6,7 @@ import { collection, query, where, getDocs, addDoc } from "https://www.gstatic.c
 async function displayImagesByCategory(categoryName) {
     // Reference to the container in your HTML where the images will be displayed
     console.log(`Querying for .${categoryName}-images .image-gallery`);
-    const categoryContainer = document.querySelector(`.${categoryName}-images .image-gallery`);
+    const categoryContainer = document.querySelector(`.${categoryName}-images`);
     console.log(categoryContainer);
     
     // Check if the container exists
@@ -16,7 +16,7 @@ async function displayImagesByCategory(categoryName) {
     }
 
     // Clear out any existing content in the container
-    categoryContainer.innerHTML = '';
+    categoryContainer.innerHTML = ''; 
 
     // Query Firestore for images in the specified category
     const imagesCollectionRef = collection(db, 'images');
@@ -204,6 +204,24 @@ document.addEventListener('DOMContentLoaded', async function() {
             navBar.classList.add('fixed');
         } else {
             navBar.classList.remove('fixed');
+        }
+    });
+    
+    // Close an image
+    document.querySelector('.close').addEventListener('click', closeImageContextModal);
+
+    // Assign the close function to the window click if you want to close the modal by clicking outside of it
+    window.addEventListener('click', function(event) {
+        var contextModal = document.getElementById('imageContextModal');
+        if (event.target === contextModal) {
+            closeImageContextModal();
+        }
+    });
+    
+    // Optionally, add an event listener for the escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeImageContextModal();
         }
     });
 
