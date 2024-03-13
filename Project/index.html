@@ -33,8 +33,8 @@
         <!-- Upload Window -->
         <div id="uploadModal" class="modal">
             <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2>Add Information</h2>
+                <span id="closeUploadModalButton" class="close">&times;</span>
+                <h2>Upload Image</h2>
                 <form id="imageUploadForm">
                     <label for="imageUpload">Image preview:</label>
                     <input type="file" id="imageUpload" accept="image/*">
@@ -134,7 +134,7 @@
 <!-- Image Context Modal -->
 <div id="imageContextModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeImageContextModal()">&times;</span>
+        <span id="closeImageContextButton" class="close">&times;</span>
         <h2>Image Information</h2>
         <div id="imageContextContent">
             <!-- Content will be filled in by JavaScript -->

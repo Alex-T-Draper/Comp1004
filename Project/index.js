@@ -67,6 +67,7 @@ function openImageContextModal(contentHtml) {
     contextModal.style.display = 'block';
 }
 
+// Close button function
 function closeImageContextModal() {
     var contextModal = document.getElementById('imageContextModal');
     contextModal.style.display = 'none';
@@ -85,22 +86,13 @@ function highlightNavButton() {
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
+    
     var modal = document.getElementById('uploadModal');
     var btn = document.getElementById('openModalButton');
-    var span = document.getElementsByClassName("close")[0];
+
 
     btn.onclick = function() {
         modal.style.display = "block";
-    }
-
-    span.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    window.onclick = function(event) {
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
     }
 
     document.getElementById('imageUpload').addEventListener('change', function(event) {
@@ -207,21 +199,39 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
     
-    // Close an image
-    document.querySelector('.close').addEventListener('click', closeImageContextModal);
+    // Function to close the image context modal
+    function closeImageContextModal() {
+        document.getElementById('imageContextModal').style.display = 'none';
+    }
 
-    // Assign the close function to the window click if you want to close the modal by clicking outside of it
+    // Function to close the upload modal
+    function closeUploadModal() {
+        document.getElementById('uploadModal').style.display = 'none';
+    }
+
+    // Add the click event listeners to the 'X' close buttons
+    document.getElementById('closeImageContextButton').addEventListener('click', closeImageContextModal);
+    document.getElementById('closeUploadModalButton').addEventListener('click', closeUploadModal);
+
+    // Add the click event listener to close the modals if clicking outside of them
     window.addEventListener('click', function(event) {
-        var contextModal = document.getElementById('imageContextModal');
-        if (event.target === contextModal) {
+        if (event.target === document.getElementById('imageContextModal')) {
             closeImageContextModal();
         }
+        if (event.target === document.getElementById('uploadModal')) {
+            closeUploadModal();
+        }
     });
-    
-    // Optionally, add an event listener for the escape key
+
+    // Add the event listener for the escape key to close the modals
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
-            closeImageContextModal();
+            if (document.getElementById('imageContextModal').style.display === 'block') {
+                closeImageContextModal();
+            }
+            if (document.getElementById('uploadModal').style.display === 'block') {
+                closeUploadModal();
+            }
         }
     });
 
