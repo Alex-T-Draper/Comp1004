@@ -1,9 +1,8 @@
 import { db, storage } from './firebase-init.js';
 import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
-import { collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { collection, query, where, getDocs, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-// Function to display images by category
 // Function to display images by category
 async function displayImagesByCategory(categoryName) {
     // Reference to the container in your HTML where the images will be displayed
@@ -27,6 +26,7 @@ async function displayImagesByCategory(categoryName) {
     // Loop through the documents returned by the query
     for (const docSnapshot of querySnapshot.docs) {
         const data = docSnapshot.data();
+
         const imageGridItem = document.createElement('div');
         imageGridItem.className = 'image-grid-item';
         imageGridItem.setAttribute('data-id', docSnapshot.id); // Use this attribute to identify the document
@@ -43,13 +43,21 @@ async function displayImagesByCategory(categoryName) {
         const button = document.createElement('button');
         button.className = 'toggle-context';
         button.textContent = '▼';
-        button.onclick = () => openImageContextModal(docSnapshot.id, data.likes || 0, data.dislikes || 0, `
-            <h3>${data.imageName}</h3>
-            <img src="${data.url}" alt="Image Preview" style="max-width: 100%;"><br>
-            <p>Uploader: ${data.author}</p>
-            <p>Category: ${data.category}</p>
-            <p>Description: ${data.description}</p>
-        `);
+        button.onclick = async () => {
+            try {
+                const freshDocSnapshot = await getDoc(doc(db, 'images', docSnapshot.id));
+                const freshData = freshDocSnapshot.data();
+                openImageContextModal(freshDocSnapshot.id, `
+                    <h3>${freshData.imageName}</h3>
+                    <img src="${freshData.url}" alt="Image Preview" style="max-width: 100%;"><br>
+                    <p>Uploader: ${freshData.author}</p>
+                    <p>Category: ${freshData.category}</p>
+                    <p>Description: ${freshData.description}</p>
+                `);
+            } catch (error) {
+                console.error('Error fetching fresh data', error);
+            }
+        };
 
         // Append the image and button to the div
         imageGridItem.appendChild(img);
@@ -61,61 +69,72 @@ async function displayImagesByCategory(categoryName) {
 }
 
 // Like and dislike button function
-async function updateLikes(docId, isLike, likesCounter, dislikesCounter) {
+async function updateLikes(docId, isLike) {
     const imageDocRef = doc(db, 'images', docId);
-    await runTransaction(db, async (transaction) => {
+    runTransaction(db, async (transaction) => {
         const imageDoc = await transaction.get(imageDocRef);
         if (!imageDoc.exists()) {
-            throw "Document does not exist!";
+            throw new Error("Document does not exist!");
         }
         const data = imageDoc.data();
         const newLikes = isLike ? (data.likes || 0) + 1 : data.likes;
-        const newDislikes = isLike ? data.dislikes : (data.dislikes || 0) + 1;
-        transaction.update(imageDocRef, { likes: newLikes, dislikes: newDislikes });
-
-        // Update the counters immediately after transaction completes
-        likesCounter.textContent = `Likes: ${newLikes}`;
-        dislikesCounter.textContent = `Dislikes: ${newDislikes}`;
+        const newDislikes = !isLike ? (data.dislikes || 0) + 1 : data.dislikes;
+        
+        transaction.update(imageDocRef, {
+            likes: newLikes, 
+            dislikes: newDislikes 
+        });
+        
+        return { newLikes, newDislikes }; // Return the new values so they can be used after the transaction
+    }).then(({ newLikes, newDislikes }) => {
+        // Update the likes/dislikes counter in the DOM
+        const likesCounterElement = document.getElementById(`likes-count-${docId}`);
+        const dislikesCounterElement = document.getElementById(`dislikes-count-${docId}`);
+        if (likesCounterElement && dislikesCounterElement) {
+            likesCounterElement.textContent = `Likes: ${newLikes}`;
+            dislikesCounterElement.textContent = `Dislikes: ${newDislikes}`;
+        }
     }).catch(error => {
         console.error("Transaction failed: ", error);
     });
 }
 
 // Function to open the image context modal
-function openImageContextModal(docId, likes, dislikes, contentHtml) {
-
+async function openImageContextModal(docId) {
     var contextModal = document.getElementById('imageContextModal');
     var contextContent = document.getElementById('imageContextContent');
-
-    const likesCounter = document.createElement('span');
-    likesCounter.textContent = `Likes: ${likes}`;
-
-    const dislikesCounter = document.createElement('span');
-    dislikesCounter.textContent = `Dislikes: ${dislikes}`;
-
-    const likeButton = document.createElement('button');
-    likeButton.textContent = 'Like';
-    // Pass the counters to the updateLikes function
-    likeButton.onclick = () => updateLikes(docId, true, likesCounter, dislikesCounter);
-
-    const dislikeButton = document.createElement('button');
-    dislikeButton.textContent = 'Dislike';
-    // Pass the counters to the updateLikes function
-    dislikeButton.onclick = () => updateLikes(docId, false, likesCounter, dislikesCounter);
-
-    // Clear previous content
-    contextContent.innerHTML = '';
     
-    // Insert the new content
-    contextContent.insertAdjacentHTML('beforeend', contentHtml);
+    // Fetch the latest data for the image
+    const imageDocRef = doc(db, 'images', docId);
+    const imageDocSnap = await getDoc(imageDocRef);
     
-    // Append the like and dislike elements
-    contextContent.appendChild(likesCounter);
-    contextContent.appendChild(likeButton);
-    contextContent.appendChild(dislikesCounter);
-    contextContent.appendChild(dislikeButton);
+    if (imageDocSnap.exists()) {
+        const data = imageDocSnap.data();
+        
+        // Prepare dynamic HTML content with fresh like/dislike counts
+        const dynamicContentHtml = `
+            <h3>${data.imageName}</h3>
+            <img src="${data.url}" alt="Image Preview" style="max-width: 100%;"><br>
+            <p>Uploader: ${data.author}</p>
+            <p>Category: ${data.category}</p>
+            <p>Description: ${data.description}</p>
+            <div>
+                <span id="likes-count-${docId}">Likes: ${data.likes || 0}</span>
+                <button id="like-button-${docId}">Like</button>
+                <span id="dislikes-count-${docId}">Dislikes: ${data.dislikes || 0}</span>
+                <button id="dislike-button-${docId}">Dislike</button>
+            </div>
+        `;
 
-    contextModal.style.display = 'block';
+        contextContent.innerHTML = dynamicContentHtml;
+
+        document.getElementById(`like-button-${docId}`).onclick = () => updateLikes(docId, true);
+        document.getElementById(`dislike-button-${docId}`).onclick = () => updateLikes(docId, false);
+
+        contextModal.style.display = 'block';
+    } else {
+        console.error('No such document!');
+    }
 }
 
 // Close button function
