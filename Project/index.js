@@ -1,6 +1,7 @@
 import { db, storage } from './firebase-init.js';
 import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 import { collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 // Function to display images by category
 async function displayImagesByCategory(categoryName) {
@@ -29,8 +30,8 @@ async function displayImagesByCategory(categoryName) {
 
         // Create a div to hold the image and its associated data
         const imageGridItem = document.createElement('div');
-        imageGridItem.setAttribute('data-image-name', data.imageName)
         imageGridItem.className = 'image-grid-item';
+        imageGridItem.setAttribute('data-image-name', data.imageName);
         imageGridItem.setAttribute('data-author', data.author);
         imageGridItem.setAttribute('data-category', data.category);
         imageGridItem.setAttribute('data-description', data.description);
@@ -40,18 +41,20 @@ async function displayImagesByCategory(categoryName) {
         img.src = data.url;
         img.alt = data.description; // Use the description as the alt text
 
-        // Create the fields for HTML from Firebase
+        // Create the button to view image details and like/dislike buttons
         const button = document.createElement('button');
         button.className = 'toggle-context';
         button.textContent = '▼';
         button.onclick = () => openImageContextModal(
+            doc.id,
+            data.likes || 0,
+            data.dislikes || 0,
             `<h3>${data.imageName}</h3>
             <img src="${data.url}" alt="Image Preview" style="max-width: 100%;"><br>
             <p>Uploader: ${data.author}</p>
             <p>Category: ${data.category}</p>
             <p>Description: ${data.description}</p>`
-        );
-
+    );
         // Append the image and button to the div
         imageGridItem.appendChild(img);
         imageGridItem.appendChild(button);
@@ -61,11 +64,60 @@ async function displayImagesByCategory(categoryName) {
     }
 }
 
+// Like and dislike button function
+async function updateLikes(docId, isLike, likesCounter, dislikesCounter) {
+    const imageDocRef = doc(db, 'images', docId);
+    await runTransaction(db, async (transaction) => {
+        const imageDoc = await transaction.get(imageDocRef);
+        if (!imageDoc.exists()) {
+            throw "Document does not exist!";
+        }
+        const data = imageDoc.data();
+        const newLikes = isLike ? (data.likes || 0) + 1 : data.likes;
+        const newDislikes = isLike ? data.dislikes : (data.dislikes || 0) + 1;
+        transaction.update(imageDocRef, { likes: newLikes, dislikes: newDislikes });
+
+        // Update the counters immediately after transaction completes
+        likesCounter.textContent = `Likes: ${newLikes}`;
+        dislikesCounter.textContent = `Dislikes: ${newDislikes}`;
+    }).catch(error => {
+        console.error("Transaction failed: ", error);
+    });
+}
+
 // Function to open the image context modal
-function openImageContextModal(contentHtml) {
+function openImageContextModal(docId, likes, dislikes, contentHtml) {
     var contextModal = document.getElementById('imageContextModal');
     var contextContent = document.getElementById('imageContextContent');
-    contextContent.innerHTML = contentHtml;
+
+    const likesCounter = document.createElement('span');
+    likesCounter.textContent = `Likes: ${likes}`;
+
+    const dislikesCounter = document.createElement('span');
+    dislikesCounter.textContent = `Dislikes: ${dislikes}`;
+
+    const likeButton = document.createElement('button');
+    likeButton.textContent = 'Like';
+    // Pass the counters to the updateLikes function
+    likeButton.onclick = () => updateLikes(docId, true, likesCounter, dislikesCounter);
+
+    const dislikeButton = document.createElement('button');
+    dislikeButton.textContent = 'Dislike';
+    // Pass the counters to the updateLikes function
+    dislikeButton.onclick = () => updateLikes(docId, false, likesCounter, dislikesCounter);
+
+    // Clear previous content
+    contextContent.innerHTML = '';
+    
+    // Insert the new content
+    contextContent.insertAdjacentHTML('beforeend', contentHtml);
+    
+    // Append the like and dislike elements
+    contextContent.appendChild(likesCounter);
+    contextContent.appendChild(likeButton);
+    contextContent.appendChild(dislikesCounter);
+    contextContent.appendChild(dislikeButton);
+
     contextModal.style.display = 'block';
 }
 
@@ -137,6 +189,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                     category: category,
                     description: description,
                     author: author,
+                    likes: 0,
+                    dislikes: 0,
                     url: url
                 });
     
@@ -145,6 +199,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     
                 document.getElementById('imageUploadForm').reset();
                 document.getElementById('imagePreview').style.display = 'none';
+                // Update Images on page
+                await displayImagesByCategory(category);
     
             } catch (error) {
                 console.error('Error during the upload:', error);
