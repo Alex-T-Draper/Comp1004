@@ -32,33 +32,50 @@
         </ul>
         <!-- Upload Window -->
         <div id="uploadModal" class="modal">
+            <!-- Modal content -->
             <div class="modal-content">
                 <span id="closeUploadModalButton" class="close">&times;</span>
-                <h2>Upload Image</h2>
+                <h3>Upload Image</h3>
                 <form id="imageUploadForm">
                     <label for="imageUpload">Image preview:</label>
-                    <input type="file" id="imageUpload" accept="image/*">
+                    <input type="file" id="imageUpload" accept="image/*" required>
                     <img id="imagePreview" src="#" alt="Image Preview" style="display:none;">
-            
-                    <label for="authorName">Author name:</label>
-                    <input type="text" id="authorName">
-            
-                    <label for="imageCategory">Category:</label>
-                    <select id="imageCategory">
-                        <option value="food">Food</option>
-                        <option value="fashion">Fashion</option>
-                        <option value="sports">Sports</option>
-                        <option value="informative">Informative</option>
-                        <option value="funny">Funny</option>
-                        <option value="history">History</option>
-                        <option value="none">None</option>
-                    </select>
-            
-                    <label for="imageInfo">Information:</label>
-                    <textarea id="imageInfo"></textarea>
+        
+                    <div class="fields-row">
+                        <div class="field">
+                            <label for="imageName">Image name:</label>
+                            <input type="text" id="imageName" required>
+                        </div>
+                        <div class="field">
+                            <label for="authorName">Author name:</label>
+                            <input type="text" id="authorName" required>
+                        </div>
+                    </div>
                     
-                    <button type="button" id="cancelUpload">Cancel</button>
-                    <button type="submit" id="buttonUpload">Upload</button>
+                    <div class="fields-row">
+                        <div class="field">
+                            <label for="imageInfo">Information:</label>
+                            <textarea id="imageInfo" style="width: 217px; height: 34px;" required></textarea>
+                        </div>
+                        <div class="field">
+                            <label for="imageCategory">Category:</label>
+                            <select id="imageCategory" required>
+                                <option value="" selected disabled>Select</option>
+                                <option value="food">Food</option>
+                                <option value="fashion">Fashion</option>
+                                <option value="sports">Sports</option>
+                                <option value="informative">Informative</option>
+                                <option value="funny">Funny</option>
+                                <option value="history">History</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+                    </div>
+        
+                    <div class="button-container">
+                        <button type="button" id="cancelUpload">Cancel</button>
+                        <button type="submit" id="buttonUpload">Upload</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -80,7 +97,7 @@
     <h2 id="foodImagesHeader">Food</h2>
 </header>
 <!-- The container where dynamic content will be inserted -->
-<div class="food-images">
+<div class="food-images  image-gallery">
     <!-- JavaScript will append image-grid-item elements here -->
 </div>
 
@@ -89,7 +106,7 @@
     <h2 id="fashionImagesHeader">Fashion</h2>
 </header>
 <!-- The container where dynamic content will be inserted -->
-<div class="fashion-images">
+<div class="fashion-images  image-gallery">
     <!-- JavaScript will append image-grid-item elements here -->
 </div>
 
@@ -97,28 +114,27 @@
 <header>
     <h2 id="sportsImagesHeader">Sports</h2>
 </header>
-<div class="image-gallery">
+
 <!-- The container where dynamic content will be inserted -->
-<div class="sports-images">
+<div class="sports-images image-gallery">
     <!-- JavaScript will append image-grid-item elements here -->
 </div>
-</div>
+
 <!-- Informative Category -->
 <header>
     <h2 id="informativeImagesHeader">Informative</h2>
 </header>
 <!-- The container where dynamic content will be inserted -->
-<div class="image-gallery">
 <div class="informative-images image-gallery">
     <!-- JavaScript will append image-grid-item elements here -->
 </div>
-</div>
+
 <!-- Funny Category -->
 <header>
-    <h2 id="funnyImagesHeader">History</h2>
+    <h2 id="funnyImagesHeader">Funny</h2>
 </header>
 <!-- The container where dynamic content will be inserted -->
-<div class="funny-images">
+<div class="funny-images  image-gallery">
     <!-- JavaScript will append image-grid-item elements here -->
 </div>
 
@@ -127,7 +143,7 @@
     <h2 id="historyImagesHeader">History</h2>
 </header>
 <!-- The container where dynamic content will be inserted -->
-<div class="history-images">
+<div class="history-images  image-gallery">
     <!-- JavaScript will append image-grid-item elements here -->
 </div>
 
@@ -135,7 +151,6 @@
 <div id="imageContextModal" class="modal">
     <div class="modal-content">
         <span id="closeImageContextButton" class="close">&times;</span>
-        <h2>Image Information</h2>
         <div id="imageContextContent">
             <!-- Content will be filled in by JavaScript -->
         </div>

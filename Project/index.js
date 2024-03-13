@@ -29,6 +29,7 @@ async function displayImagesByCategory(categoryName) {
 
         // Create a div to hold the image and its associated data
         const imageGridItem = document.createElement('div');
+        imageGridItem.setAttribute('data-image-name', data.imageName)
         imageGridItem.className = 'image-grid-item';
         imageGridItem.setAttribute('data-author', data.author);
         imageGridItem.setAttribute('data-category', data.category);
@@ -39,13 +40,14 @@ async function displayImagesByCategory(categoryName) {
         img.src = data.url;
         img.alt = data.description; // Use the description as the alt text
 
-        // Create the button to view image details
+        // Create the fields for HTML from Firebase
         const button = document.createElement('button');
         button.className = 'toggle-context';
         button.textContent = '▼';
         button.onclick = () => openImageContextModal(
-            `<img src="${data.url}" alt="Image Preview" style="max-width: 100%;"><br>
-            <p>Author: ${data.author}</p>
+            `<h3>${data.imageName}</h3>
+            <img src="${data.url}" alt="Image Preview" style="max-width: 100%;"><br>
+            <p>Uploader: ${data.author}</p>
             <p>Category: ${data.category}</p>
             <p>Description: ${data.description}</p>`
         );
@@ -59,7 +61,7 @@ async function displayImagesByCategory(categoryName) {
     }
 }
 
-  // Function to open the image context modal
+// Function to open the image context modal
 function openImageContextModal(contentHtml) {
     var contextModal = document.getElementById('imageContextModal');
     var contextContent = document.getElementById('imageContextContent');
@@ -108,12 +110,16 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('imageUploadForm').addEventListener('submit', async function(event) {
         event.preventDefault();
         
+        // Retrieve all form inputs
         const fileInput = document.getElementById('imageUpload');
+        const imageNameInput = document.getElementById('imageName'); 
         const categoryInput = document.getElementById('imageCategory');
         const descriptionInput = document.getElementById('imageInfo');
         const authorInput = document.getElementById('authorName'); 
-
+        
+        // Retrieve the values
         const file = fileInput.files[0];
+        const imageName = imageNameInput.value;
         const category = categoryInput.value;
         const description = descriptionInput.value;
         const author = authorInput.value;
@@ -126,7 +132,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     
                 const imagesCollectionRef = collection(db, 'images');
                 const docRef = await addDoc(imagesCollectionRef, {
-                    name: file.name,
+                    fileName: file.name,
+                    imageName: imageName,
                     category: category,
                     description: description,
                     author: author,
@@ -151,9 +158,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     document.getElementById('cancelUpload').addEventListener('click', function() {
+        // Reset the form fields
+        document.getElementById('imageUploadForm').reset();
+        // Hide the image preview
+        var output = document.getElementById('imagePreview');
+        output.style.display = 'none';
+        // Clear the source of the image preview
+        output.src = '';
+        // Hide the modal
         modal.style.display = "none";
     });
 
+    // When down arrow is pressed on image
     document.querySelectorAll('.toggle-context').forEach(function(button) {
         button.addEventListener('click', function() {
             var imageItem = button.closest('.image-grid-item');
@@ -170,6 +186,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     });
 
+    // Navigation bar
     var navButtons = document.querySelectorAll('.nav-btn');
     navButtons.forEach(button => {
         button.addEventListener('click', function() {
@@ -235,6 +252,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 
+    // Display images
     try {
         await displayImagesByCategory('food');
         await displayImagesByCategory('fashion');

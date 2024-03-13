@@ -25,12 +25,18 @@ h2 {
     padding-left: 60px;
 }
 
+h3 {
+    text-align: center;
+    padding: 5px 0;
+}
+
 .website-description {
     text-align: center;
     width: 50%;
     border: 3px solid #888;
     padding: 10px; /* Add padding to the inside of the border */
     margin: auto; /* Add margin to the outside of the border */
+    margin-top: 20px;
 }
 
 
@@ -68,6 +74,7 @@ h2 {
     background-color: #04AA6D;
 }
 
+
 /* Upload Modal */
 .modal {
     display: none;
@@ -88,6 +95,65 @@ h2 {
     border: 1px solid #888;
     width: 80%;
     max-width: 500px;
+    text-align: left;
+}
+
+.modal-content img {
+    max-width: 100%;
+    max-height: 600px;
+    width: auto;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.fields-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 8px;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.field,
+.field label,
+.field input,
+.field select {
+    justify-content: center;
+    width: 100%;
+}
+
+/* Style adjustments for input elements */
+.modal-content input[type="text"],
+.modal-content select,
+.modal-content textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Specific style for textarea to take full width */
+.modal-content textarea {
+    height: 80px;
+    margin-bottom: 8px;
+}
+
+/* Styles for buttons to be closer together */
+.modal-content .button-container {
+    display: flex;
+    justify-content: center; /* Center the buttons */
+    width: 100%;
+}
+
+.modal-content button {
+    padding: 10px 15px;
+    margin: 0 8px; /* Reduced space on the sides of the buttons */
 }
 
 .close {
