@@ -4,11 +4,11 @@ import { collection, query, where, getDocs, addDoc } from "https://www.gstatic.c
 import { doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 // Function to display images by category
+// Function to display images by category
 async function displayImagesByCategory(categoryName) {
     // Reference to the container in your HTML where the images will be displayed
     console.log(`Querying for .${categoryName}-images .image-gallery`);
     const categoryContainer = document.querySelector(`.${categoryName}-images`);
-    console.log(categoryContainer);
     
     // Check if the container exists
     if (!categoryContainer) {
@@ -17,7 +17,7 @@ async function displayImagesByCategory(categoryName) {
     }
 
     // Clear out any existing content in the container
-    categoryContainer.innerHTML = ''; 
+    categoryContainer.innerHTML = '';
 
     // Query Firestore for images in the specified category
     const imagesCollectionRef = collection(db, 'images');
@@ -25,13 +25,11 @@ async function displayImagesByCategory(categoryName) {
     const querySnapshot = await getDocs(q);
 
     // Loop through the documents returned by the query
-    for (const doc of querySnapshot.docs) {
-        const data = doc.data();
-
-        // Create a div to hold the image and its associated data
+    for (const docSnapshot of querySnapshot.docs) {
+        const data = docSnapshot.data();
         const imageGridItem = document.createElement('div');
         imageGridItem.className = 'image-grid-item';
-        imageGridItem.setAttribute('data-image-name', data.imageName);
+        imageGridItem.setAttribute('data-id', docSnapshot.id); // Use this attribute to identify the document
         imageGridItem.setAttribute('data-author', data.author);
         imageGridItem.setAttribute('data-category', data.category);
         imageGridItem.setAttribute('data-description', data.description);
@@ -39,22 +37,20 @@ async function displayImagesByCategory(categoryName) {
         // Create the image element
         const img = document.createElement('img');
         img.src = data.url;
-        img.alt = data.description; // Use the description as the alt text
+        img.alt = data.description;
 
-        // Create the button to view image details and like/dislike buttons
+        // Create the button to view image details
         const button = document.createElement('button');
         button.className = 'toggle-context';
         button.textContent = '▼';
-        button.onclick = () => openImageContextModal(
-            doc.id,
-            data.likes || 0,
-            data.dislikes || 0,
-            `<h3>${data.imageName}</h3>
+        button.onclick = () => openImageContextModal(docSnapshot.id, data.likes || 0, data.dislikes || 0, `
+            <h3>${data.imageName}</h3>
             <img src="${data.url}" alt="Image Preview" style="max-width: 100%;"><br>
             <p>Uploader: ${data.author}</p>
             <p>Category: ${data.category}</p>
-            <p>Description: ${data.description}</p>`
-    );
+            <p>Description: ${data.description}</p>
+        `);
+
         // Append the image and button to the div
         imageGridItem.appendChild(img);
         imageGridItem.appendChild(button);
@@ -87,6 +83,7 @@ async function updateLikes(docId, isLike, likesCounter, dislikesCounter) {
 
 // Function to open the image context modal
 function openImageContextModal(docId, likes, dislikes, contentHtml) {
+
     var contextModal = document.getElementById('imageContextModal');
     var contextContent = document.getElementById('imageContextContent');
 
