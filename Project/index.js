@@ -90,9 +90,31 @@ async function updateLikes(docId, isLike) {
         // Update the likes/dislikes counter in the DOM
         const likesCounterElement = document.getElementById(`likes-count-${docId}`);
         const dislikesCounterElement = document.getElementById(`dislikes-count-${docId}`);
+        const likeButtonElement = document.getElementById(`like-button-${docId}`);
+        const dislikeButtonElement = document.getElementById(`dislike-button-${docId}`);
+
         if (likesCounterElement && dislikesCounterElement) {
-            likesCounterElement.textContent = `Likes: ${newLikes}`;
-            dislikesCounterElement.textContent = `Dislikes: ${newDislikes}`;
+            likesCounterElement.textContent = newLikes;
+            dislikesCounterElement.textContent = newDislikes;
+            
+            // Here we add or remove the 'liked' or 'disliked' class based on the button clicked
+            if (isLike) {
+                if (likeButtonElement) {
+                    likeButtonElement.classList.add('liked');
+                    likeButtonElement.classList.remove('disliked'); // in case it was previously disliked
+                }
+                if (dislikeButtonElement) {
+                    dislikeButtonElement.classList.remove('disliked');
+                }
+            } else {
+                if (dislikeButtonElement) {
+                    dislikeButtonElement.classList.add('disliked');
+                    dislikeButtonElement.classList.remove('liked'); // in case it was previously liked
+                }
+                if (likeButtonElement) {
+                    likeButtonElement.classList.remove('liked');
+                }
+            }
         }
     }).catch(error => {
         console.error("Transaction failed: ", error);
@@ -119,17 +141,17 @@ async function openImageContextModal(docId) {
             <p>Category: ${data.category}</p>
             <p>Description: ${data.description}</p>
             <div>
-                <span id="likes-count-${docId}">Likes: ${data.likes || 0}</span>
-                <button id="like-button-${docId}">Like</button>
-                <span id="dislikes-count-${docId}">Dislikes: ${data.dislikes || 0}</span>
-                <button id="dislike-button-${docId}">Dislike</button>
+            <span id="likes-count-${docId}">${data.likes || 0}</span>
+            <button id="like-button-${docId}" aria-label="like"><i class="fa fa-thumbs-up"></i></button>
+            <span id="dislikes-count-${docId}">${data.dislikes || 0}</span>
+            <button id="dislike-button-${docId}" aria-label="dislike"><i class="fa fa-thumbs-down"></i></button>
             </div>
         `;
 
         contextContent.innerHTML = dynamicContentHtml;
 
-        document.getElementById(`like-button-${docId}`).onclick = () => updateLikes(docId, true);
-        document.getElementById(`dislike-button-${docId}`).onclick = () => updateLikes(docId, false);
+        document.getElementById(`like-button-${docId}`).addEventListener('click', () => updateLikes(docId, true));
+        document.getElementById(`dislike-button-${docId}`).addEventListener('click', () => updateLikes(docId, false));
 
         contextModal.style.display = 'block';
     } else {
