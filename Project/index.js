@@ -2,7 +2,7 @@ import { db, storage } from './firebase-init.js';
 import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 import { collection, query, where, getDocs, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-import { getAuth, signInAnonymously, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { getAuth, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
 
 // Authentication Function
@@ -259,6 +259,45 @@ document.addEventListener('DOMContentLoaded', async function() {
             const errorMessage = error.message;
             alert(`Error ${errorCode}: ${errorMessage}`);
         });
+    });
+
+    // Sign In
+
+    // Event listener for the Log In button to open the Sign In modal
+    document.getElementById('signInButton').addEventListener('click', function() {
+        document.getElementById('signInModal').style.display = 'block';
+    });
+
+    // Event listener for the close button of the sign-in modal
+    document.getElementById('closeSignInModalButton').addEventListener('click', function() {
+        document.getElementById('signInModal').style.display = 'none';
+    });
+    
+    document.getElementById('signInForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting normally
+    
+        // Get email and password input values
+        const email = document.getElementById('signInEmail').value;
+        const password = document.getElementById('signInPassword').value;
+    
+        // Firebase authentication logic for signing in
+        const auth = getAuth();
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Signed in successfully
+                const user = userCredential.user;
+                console.log('User signed in:', user.uid);
+                // Optionally, close the modal and clear the form here
+                document.getElementById('signInModal').style.display = 'none';
+                document.getElementById('signInForm').reset();
+                // Redirect or update UI as needed
+            })
+            .catch((error) => {
+                // Handle errors here, such as incorrect email or password
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                alert(`Error ${errorCode}: ${errorMessage}`);
+            });
     });
 
     // Upload Image
