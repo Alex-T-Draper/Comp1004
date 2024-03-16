@@ -57,126 +57,113 @@ function closeSignInModal() {
 
 // Function to display images by category
 async function displayImagesByCategory(categoryName) {
-    // Reference to the container in your HTML where the images will be displayed
-    console.log(`Querying for .${categoryName}-images .image-gallery`);
-    const categoryContainer = document.querySelector(`.${categoryName}-images`);
-    
-    // Check if the container exists
-    if (!categoryContainer) {
-        console.error(`The container for category "${categoryName}" does not exist.`);
-        return;
-    }
-
-    // Clear out any existing content in the container
-    categoryContainer.innerHTML = '';
-
-    // Query Firestore for images in the specified category
-    const imagesCollectionRef = collection(db, 'images');
-    const q = query(imagesCollectionRef, where("category", "==", categoryName));
-    const querySnapshot = await getDocs(q);
-
-    // Loop through the documents returned by the query
-    for (const docSnapshot of querySnapshot.docs) {
-        const data = docSnapshot.data();
-
-        const imageGridItem = document.createElement('div');
-        imageGridItem.className = 'image-grid-item';
-        imageGridItem.setAttribute('data-id', docSnapshot.id); // Use this attribute to identify the document
-        imageGridItem.setAttribute('data-author', data.author);
-        imageGridItem.setAttribute('data-category', data.category);
-        imageGridItem.setAttribute('data-description', data.description);
-
-        // Create the image element
-        const img = document.createElement('img');
-        img.src = data.url;
-        img.alt = data.description;
-
-        // Create the button to view image details
-        const button = document.createElement('button');
-        button.className = 'toggle-context';
-        button.textContent = '▼';
-        button.onclick = async () => {
-            try {
-                const freshDocSnapshot = await getDoc(doc(db, 'images', docSnapshot.id));
-                const freshData = freshDocSnapshot.data();
-                openImageContextModal(freshDocSnapshot.id, `
-                    <h3>${freshData.imageName}</h3>
-                    <img src="${freshData.url}" alt="Image Preview" style="max-width: 100%;"><br>
-                    <p>Uploader: ${freshData.author}</p>
-                    <p>Category: ${freshData.category}</p>
-                    <p>Description: ${freshData.description}</p>
-                `);
-            } catch (error) {
-                console.error('Error fetching fresh data', error);
-            }
-        };
-
-        // Append the image and button to the div
-        imageGridItem.appendChild(img);
-        imageGridItem.appendChild(button);
-
-        // Append the div to the container in the HTML
-        categoryContainer.appendChild(imageGridItem);
-    }
+     // Reference to the container in your HTML where the images will be displayed
+     console.log(`Querying for .${categoryName}-images .image-gallery`);
+     const categoryContainer = document.querySelector(`.${categoryName}-images`);
+ 
+     // Check if the container exists
+     if (!categoryContainer) {
+         console.error(`The container for category "${categoryName}" does not exist.`);
+         return;
+     }
+ 
+     // Clear out any existing content in the container
+     categoryContainer.innerHTML = '';
+ 
+     // Query Firestore for images in the specified category
+     const imagesCollectionRef = collection(db, 'images');
+     const q = query(imagesCollectionRef, where("category", "==", categoryName));
+     const querySnapshot = await getDocs(q);
+ 
+     // Loop through the documents returned by the query
+     for (const docSnapshot of querySnapshot.docs) {
+         const data = docSnapshot.data();
+         const imageGridItem = document.createElement('div');
+         imageGridItem.className = 'image-grid-item';
+         imageGridItem.setAttribute('data-id', docSnapshot.id);
+         imageGridItem.setAttribute('data-author', data.author);
+         imageGridItem.setAttribute('data-category', data.category);
+         imageGridItem.setAttribute('data-description', data.description);
+ 
+         const img = document.createElement('img');
+         img.src = data.url;
+         img.alt = data.description || 'Image';
+         imageGridItem.appendChild(img);
+ 
+         const button = document.createElement('button');
+         button.className = 'toggle-context';
+         button.textContent = '▼';
+         button.onclick = () => openImageContextModal(docSnapshot.id);
+         imageGridItem.appendChild(button);
+ 
+         categoryContainer.appendChild(imageGridItem);
+     }
 }
 
 // Like and dislike button function
-async function updateLikes(docId, isLike) {
+async function updateLikes(docId, userId, isLike) {
     const imageDocRef = doc(db, 'images', docId);
-    runTransaction(db, async (transaction) => {
-        const imageDoc = await transaction.get(imageDocRef);
-        if (!imageDoc.exists()) {
-            throw new Error("Document does not exist!");
-        }
-        const data = imageDoc.data();
-        const newLikes = isLike ? (data.likes || 0) + 1 : data.likes;
-        const newDislikes = !isLike ? (data.dislikes || 0) + 1 : data.dislikes;
-        
-        transaction.update(imageDocRef, {
-            likes: newLikes, 
-            dislikes: newDislikes 
-        });
-        
-        return { newLikes, newDislikes }; // Return the new values so they can be used after the transaction
-    }).then(({ newLikes, newDislikes }) => {
-        // Update the likes/dislikes counter in the DOM
-        const likesCounterElement = document.getElementById(`likes-count-${docId}`);
-        const dislikesCounterElement = document.getElementById(`dislikes-count-${docId}`);
-        const likeButtonElement = document.getElementById(`like-button-${docId}`);
-        const dislikeButtonElement = document.getElementById(`dislike-button-${docId}`);
+    const userReactionRef = doc(db, `images/${docId}/reactions`, userId);
 
-        if (likesCounterElement && dislikesCounterElement) {
-            likesCounterElement.textContent = newLikes;
-            dislikesCounterElement.textContent = newDislikes;
-            
-            // Here we add or remove the 'liked' or 'disliked' class based on the button clicked
-            if (isLike) {
-                if (likeButtonElement) {
-                    likeButtonElement.classList.add('liked');
-                    likeButtonElement.classList.remove('disliked'); // in case it was previously disliked
+    try {
+        const transactionResult = await runTransaction(db, async (transaction) => {
+            const imageDoc = await transaction.get(imageDocRef);
+            const userReaction = await transaction.get(userReactionRef);
+            if (!imageDoc.exists()) {
+                throw new Error("Document does not exist!");
+            }
+
+            const data = imageDoc.data();
+            let likes = data.likes;
+            let dislikes = data.dislikes;
+            let reactionData = userReaction.data() || { like: false, dislike: false };
+
+            // Update the counts only if the user hasn't already reacted in this way
+            if (isLike && !reactionData.like) {
+                likes++; // Increment likes if the user is liking the image
+                if (reactionData.dislike) {
+                    dislikes--; // Decrement dislikes if the user previously disliked
                 }
-                if (dislikeButtonElement) {
-                    dislikeButtonElement.classList.remove('disliked');
-                }
-            } else {
-                if (dislikeButtonElement) {
-                    dislikeButtonElement.classList.add('disliked');
-                    dislikeButtonElement.classList.remove('liked'); // in case it was previously liked
-                }
-                if (likeButtonElement) {
-                    likeButtonElement.classList.remove('liked');
+            } else if (!isLike && !reactionData.dislike) {
+                dislikes++; // Increment dislikes if the user is disliking the image
+                if (reactionData.like) {
+                    likes--; // Decrement likes if the user previously liked
                 }
             }
+
+            // Update the user's reaction
+            reactionData.like = isLike;
+            reactionData.dislike = !isLike;
+
+            transaction.update(imageDocRef, { likes, dislikes });
+            transaction.set(userReactionRef, reactionData);
+
+            return { likes, dislikes }; // This will be the result of the transaction
+        });
+
+        // Transaction is successful
+        document.getElementById(`likes-count-${docId}`).textContent = transactionResult.likes;
+        document.getElementById(`dislikes-count-${docId}`).textContent = transactionResult.dislikes;
+
+        // After the transaction, update the button colors
+        const likeButtonElement = document.getElementById(`like-button-${docId}`);
+        const dislikeButtonElement = document.getElementById(`dislike-button-${docId}`);
+        if (isLike) {
+            likeButtonElement.classList.add('liked');
+            dislikeButtonElement.classList.remove('disliked');
+        } else {
+            dislikeButtonElement.classList.add('disliked');
+            likeButtonElement.classList.remove('liked');
         }
-    }).catch(error => {
+    } catch (error) {
         console.error("Transaction failed: ", error);
-    });
+    }
 }
 
 // Function to open the image context modal
 async function openImageContextModal(docId) {
-    var contextModal = document.getElementById('imageContextModal');
-    var contextContent = document.getElementById('imageContextContent');
+    const contextModal = document.getElementById('imageContextModal');
+    const contextContent = document.getElementById('imageContextContent');
     
     // Fetch the latest data for the image
     const imageDocRef = doc(db, 'images', docId);
@@ -184,8 +171,7 @@ async function openImageContextModal(docId) {
     
     if (imageDocSnap.exists()) {
         const data = imageDocSnap.data();
-        
-        // Prepare dynamic HTML content with fresh like/dislike counts
+
         const dynamicContentHtml = `
             <h3>${data.imageName}</h3>
             <img src="${data.url}" alt="Image Preview" style="max-width: 100%;"><br>
@@ -193,17 +179,52 @@ async function openImageContextModal(docId) {
             <p>Category: ${data.category}</p>
             <p>Description: ${data.description}</p>
             <div>
-            <span id="likes-count-${docId}">${data.likes || 0}</span>
-            <button id="like-button-${docId}" aria-label="like"><i class="fa fa-thumbs-up"></i></button>
-            <span id="dislikes-count-${docId}">${data.dislikes || 0}</span>
-            <button id="dislike-button-${docId}" aria-label="dislike"><i class="fa fa-thumbs-down"></i></button>
+                <span id="likes-count-${docId}">${data.likes || 0}</span>
+                <button id="like-button-${docId}" aria-label="like"><i class="fa fa-thumbs-up"></i></button>
+                <span id="dislikes-count-${docId}">${data.dislikes || 0}</span>
+                <button id="dislike-button-${docId}" aria-label="dislike"><i class="fa fa-thumbs-down"></i></button>
             </div>
         `;
 
         contextContent.innerHTML = dynamicContentHtml;
 
-        document.getElementById(`like-button-${docId}`).addEventListener('click', () => updateLikes(docId, true));
-        document.getElementById(`dislike-button-${docId}`).addEventListener('click', () => updateLikes(docId, false));
+        const likeButton = document.getElementById(`like-button-${docId}`);
+        const dislikeButton = document.getElementById(`dislike-button-${docId}`);
+        
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        // Function to set button styles based on user's previous reactions
+        const setUserReactionStyles = (like, dislike) => {
+            if (like) {
+                likeButton.classList.add('liked');
+                dislikeButton.classList.remove('disliked');
+            } else if (dislike) {
+                dislikeButton.classList.add('disliked');
+                likeButton.classList.remove('liked');
+            } else {
+                likeButton.classList.remove('liked');
+                dislikeButton.classList.remove('disliked');
+            }
+        };
+
+        // Check the user's reaction if logged in
+        if (user) {
+            const userReactionRef = doc(db, `images/${docId}/reactions`, user.uid);
+            const userReactionSnap = await getDoc(userReactionRef);
+            if (userReactionSnap.exists()) {
+                const reactionData = userReactionSnap.data();
+                setUserReactionStyles(reactionData.like, reactionData.dislike);
+            } else {
+                setUserReactionStyles(false, false);
+            }
+            likeButton.addEventListener('click', () => updateLikes(docId, user.uid, true));
+            dislikeButton.addEventListener('click', () => updateLikes(docId, user.uid, false));
+        } else {
+            setUserReactionStyles(false, false); // Reset styles if no user is logged in
+            likeButton.addEventListener('click', () => alert('You must log in to like or dislike images.'));
+            dislikeButton.addEventListener('click', () => alert('You must log in to like or dislike images.'));
+        }
 
         contextModal.style.display = 'block';
     } else {
