@@ -6,8 +6,6 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, on
 
 // Authentication state observer setup function
 
-let userInitiatedSignOut = false;
-
 function onAuthStateChangedListener() {
     const auth = getAuth();
     const welcomeText = document.getElementById('welcomeText');
@@ -28,11 +26,6 @@ function onAuthStateChangedListener() {
             signOutButton.style.display = 'none';
             uploadButton.style.display = 'none';
             welcomeText.textContent = '';
-            // Alert the user that they have been signed out
-            if (userInitiatedSignOut) {
-                alert("You have been signed out.");
-                userInitiatedSignOut = false;
-            }
         }
     });
 }
@@ -40,10 +33,7 @@ function onAuthStateChangedListener() {
 // Sign out function
 function signOutUser() {
     const auth = getAuth();
-    // Set the flag that sign out was initiated by the user
-    userInitiatedSignOut = true;
     signOut(auth).then(() => {
-        userInitiatedSignOut = true;
         console.log('User signed out');
     }).catch((error) => {
         console.error('Sign out error', error);
@@ -339,7 +329,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     document.getElementById('signOutButton').addEventListener('click', function() {
         signOutUser();
-        // You may want to redirect the user or give a message that they have been signed out here
+        alert("You have been signed out.")
     });
 
     // Upload Image
@@ -353,6 +343,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         reader.readAsDataURL(event.target.files[0]);
     });
 
+    // Upload Image Button Clicked
     document.getElementById('imageUploadForm').addEventListener('submit', async function(event) {
         event.preventDefault();
         
@@ -407,15 +398,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         modal.style.display = "none";
     });
 
+    // Cancel Button Clicked then reset all fields
     document.getElementById('cancelUpload').addEventListener('click', function() {
-        // Reset the form fields
         document.getElementById('imageUploadForm').reset();
-        // Hide the image preview
         var output = document.getElementById('imagePreview');
         output.style.display = 'none';
-        // Clear the source of the image preview
         output.src = '';
-        // Hide the modal
         modal.style.display = "none";
     });
 

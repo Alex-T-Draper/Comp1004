@@ -310,6 +310,7 @@ h3 {
 
 .bottom-nav li {
     display: inline;
+    float: right;
     margin-right: 20px;
 }
 
@@ -328,6 +329,7 @@ h3 {
 
 /* Upload Image Button */
 #openModalButton {
+    display: none;
     background-color: #04AA6D;
     color: white;
     border: none;
