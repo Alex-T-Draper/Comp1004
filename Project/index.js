@@ -2,26 +2,51 @@ import { db, storage } from './firebase-init.js';
 import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 import { collection, query, where, getDocs, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-import { getAuth, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut  } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
+// Authentication state observer setup function
 
-// Authentication Function
-function authenticateUser() {
+let userInitiatedSignOut = false;
+
+function onAuthStateChangedListener() {
     const auth = getAuth();
+    const welcomeText = document.getElementById('welcomeText');
+    const uploadButton = document.getElementById('openModalButton');
+    
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is signed in, show "Log Out" and hide "Log In" and "Sign Up"
+            signInButton.style.display = 'none';
+            signUpButton.style.display = 'none';
+            signOutButton.style.display = 'inline-block';
+            uploadButton.style.display = 'inline-block';
+            welcomeText.textContent = `Welcome back: ${user.email}`;
+        } else {
+            // No user is signed in, show "Log In" and "Sign Up" and hide "Log Out"
+            signInButton.style.display = 'inline-block';
+            signUpButton.style.display = 'inline-block';
+            signOutButton.style.display = 'none';
+            uploadButton.style.display = 'none';
+            welcomeText.textContent = '';
+            // Alert the user that they have been signed out
+            if (userInitiatedSignOut) {
+                alert("You have been signed out.");
+                userInitiatedSignOut = false;
+            }
+        }
+    });
+}
 
-    signInAnonymously(auth)
-    .then(() => {
-        // If successful, you can now get the user's info with auth.currentUser
-        console.log('Signed in anonymously');
-        const user = auth.currentUser;
-        // You can use user.uid to associate with the likes/dislikes etc.
-    })
-    .catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error(`Error ${errorCode}: ${errorMessage}`);
-        // You may want to show the user an error message
+// Sign out function
+function signOutUser() {
+    const auth = getAuth();
+    // Set the flag that sign out was initiated by the user
+    userInitiatedSignOut = true;
+    signOut(auth).then(() => {
+        userInitiatedSignOut = true;
+        console.log('User signed out');
+    }).catch((error) => {
+        console.error('Sign out error', error);
     });
 }
 
@@ -34,6 +59,10 @@ function openSignUpModal() {
 // Function to close the sign-up modal
 function closeSignUpModal() {
     document.getElementById('signUpModal').style.display = 'none';
+}
+
+function closeSignInModal() {
+    document.getElementById('signInModal').style.display = 'none';
 }
 
 // Function to display images by category
@@ -211,7 +240,10 @@ function highlightNavButton() {
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
-    authenticateUser();
+    
+    // Check the current user on initial load
+    onAuthStateChangedListener();
+
     var modal = document.getElementById('uploadModal');
     var btn = document.getElementById('openModalButton');
 
@@ -220,8 +252,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         modal.style.display = "block";
     }
 
+    document.getElementById('signOutButton').addEventListener('click', signOutUser);
+
     // Sign Up
     // Event listener for the Sign Up button to open the modal
+    
+    document.getElementById('signUpButton').addEventListener('click', function() {
+        document.getElementById('signUpModal').style.display = 'block';
+    });
+
     document.getElementById('signUpButton').addEventListener('click', openSignUpModal);
 
     // Event listener for the close button of the sign-up modal
@@ -263,15 +302,13 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // Sign In
 
-    // Event listener for the Log In button to open the Sign In modal
+    // Set up event listeners for sign-in, sign-up, and sign-out
     document.getElementById('signInButton').addEventListener('click', function() {
         document.getElementById('signInModal').style.display = 'block';
     });
 
-    // Event listener for the close button of the sign-in modal
-    document.getElementById('closeSignInModalButton').addEventListener('click', function() {
-        document.getElementById('signInModal').style.display = 'none';
-    });
+    // Event listener for the close button of the sign-up modal
+    document.getElementById('closeSignInModalButton').addEventListener('click', closeSignInModal);
     
     document.getElementById('signInForm').addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent the form from submitting normally
@@ -298,6 +335,11 @@ document.addEventListener('DOMContentLoaded', async function() {
                 const errorMessage = error.message;
                 alert(`Error ${errorCode}: ${errorMessage}`);
             });
+    });
+
+    document.getElementById('signOutButton').addEventListener('click', function() {
+        signOutUser();
+        // You may want to redirect the user or give a message that they have been signed out here
     });
 
     // Upload Image

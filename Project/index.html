@@ -9,9 +9,11 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
 <body>
-    <center>
-        <h1>Echo Gallery</h1>
-    </center>
+<center>
+    <h1>Echo Gallery</h1>
+</center>
+
+<div id="welcomeText" class="welcomeText"></div>
 
 <!-- Navigation Bar -->
 <div class="nav_bar">
@@ -49,12 +51,13 @@
                     </form>
                 </div>
             </div>
+            <li><button id="signOutButton" class="nav-btn">Log Out</button></li>
         </ul>
     </div>
     <!-- UPLOAD BUTTON -->
     <div id="bottom_page_nav">
         <ul>
-            <li style="float:right"><button id="openModalButton">Upload Image</button></li>
+            <li<button id="openModalButton">Upload Image</button></li>
         </ul>
         <!-- Upload Window -->
         <div id="uploadModal" class="modal">
