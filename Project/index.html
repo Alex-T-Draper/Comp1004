@@ -25,6 +25,30 @@
             <li><button id="funnyImagesButton" class="nav-btn" data-target="funnyImagesHeader">Funny</button></li>
             <li><button id="historyImagesButton" class="nav-btn" data-target="historyImagesHeader">History</button></li>
             <li><button id="otherImagesButton" class="nav-btn" data-target="otherImagesHeader">Other</button></li>
+            <li><button id="signInButton" class="nav-btn">Log In</button></li>
+            <div id="signInModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" id="closeSignInModalButton">&times;</span>
+                    <h3>Log In</h3>
+                    <form id="signInForm">
+                        <input type="email" id="signInEmail" placeholder="Email" required>
+                        <input type="password" id="signInPassword" placeholder="Password" required>
+                        <button type="submit" id="buttonSignIn">Log In</button>
+                    </form>
+                </div>
+            </div>
+            <li><button id="signUpButton" class="nav-btn">Sign Up</button></li>
+            <div id="signUpModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" id="closeSignUpModalButton">&times;</span>
+                    <h3>Sign Up</h3>
+                    <form id="signUpForm">
+                        <input type="email" id="signUpEmail" placeholder="Email" required>
+                        <input type="password" id="signUpPassword" placeholder="Password" required>
+                        <button type="submit" id="buttonSignUp">Sign Up</button>
+                    </form>
+                </div>
+            </div>
         </ul>
     </div>
     <!-- UPLOAD BUTTON -->
@@ -86,10 +110,16 @@
 
 <!-- Page Content -->
 <div class="website-description">
-    <h3 id="aboutHeader">About</h2>
+    <h3 id="aboutHeader">About Echo Gallery</h2>
     This is a website where you can upload and view other people's images that they have uploladed. </br> 
     Click on any image and see what the user has put as the description for the image. </br> 
-    Feel free to upload your own images and view them in real time. 
+    Feel free to sign up or log in to upload your own images and view them in real time. </br>
+    If you do not feel like signing up, then there are already some default logins: </br>
+    Email: admin1@echogallery.com Password: admin1
+    Email: admin2@echogallery.com Password: admin2 </br>
+    Email: admin3@echogallery.com Password: admin3 
+    Email: admin4@echogallery.com Password: admin4 </br>
+    Email: admin5@echogallery.com Password: admin5
 </div>
 
 <!-- Header -->

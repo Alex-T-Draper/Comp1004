@@ -2,6 +2,39 @@ import { db, storage } from './firebase-init.js';
 import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 import { collection, query, where, getDocs, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getAuth, signInAnonymously, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+
+// Authentication Function
+function authenticateUser() {
+    const auth = getAuth();
+
+    signInAnonymously(auth)
+    .then(() => {
+        // If successful, you can now get the user's info with auth.currentUser
+        console.log('Signed in anonymously');
+        const user = auth.currentUser;
+        // You can use user.uid to associate with the likes/dislikes etc.
+    })
+    .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error(`Error ${errorCode}: ${errorMessage}`);
+        // You may want to show the user an error message
+    });
+}
+
+// ** SIGN IN AND SIGN UP **
+// Function to open the sign-up modal
+function openSignUpModal() {
+    document.getElementById('signUpModal').style.display = 'block';
+}
+
+// Function to close the sign-up modal
+function closeSignUpModal() {
+    document.getElementById('signUpModal').style.display = 'none';
+}
 
 // Function to display images by category
 async function displayImagesByCategory(categoryName) {
@@ -178,7 +211,7 @@ function highlightNavButton() {
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
-    
+    authenticateUser();
     var modal = document.getElementById('uploadModal');
     var btn = document.getElementById('openModalButton');
 
@@ -187,6 +220,48 @@ document.addEventListener('DOMContentLoaded', async function() {
         modal.style.display = "block";
     }
 
+    // Sign Up
+    // Event listener for the Sign Up button to open the modal
+    document.getElementById('signUpButton').addEventListener('click', openSignUpModal);
+
+    // Event listener for the close button of the sign-up modal
+    document.getElementById('closeSignUpModalButton').addEventListener('click', closeSignUpModal);
+
+    // Event listener for the sign-up form submission
+    document.getElementById('signUpForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the form from submitting normally
+
+    // Get email and password input values
+    const email = document.getElementById('signUpEmail').value;
+    const password = document.getElementById('signUpPassword').value;
+    
+    // Regex Check
+    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    if (!emailRegex.test(email)) {
+        alert('Please enter a valid email address.');
+        return; // Stop the function if the test fails
+    }
+
+    // Firebase authentication logic for signing up
+    const auth = getAuth();
+    createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            // Signed up successfully
+            const user = userCredential.user;
+            console.log('User created:', user.uid);
+            // Close the modal and clear the form
+            closeSignUpModal();
+            document.getElementById('signUpForm').reset();
+        })
+        .catch((error) => {
+            // Handle errors here
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            alert(`Error ${errorCode}: ${errorMessage}`);
+        });
+    });
+
+    // Upload Image
     document.getElementById('imageUpload').addEventListener('change', function(event) {
         var reader = new FileReader();
         reader.onload = function() {

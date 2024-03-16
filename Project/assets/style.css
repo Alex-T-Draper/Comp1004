@@ -193,7 +193,6 @@ h3 {
 
 /* Styles for the cancel button */
 #cancelUpload {
-    /* Your styles here, e.g., colors, padding, borders, etc. */
     background-color: #f44336; /* Red background for cancel */
     color: white; /* White text */
     padding: 10px 15px; /* Some padding */
@@ -209,7 +208,6 @@ h3 {
 
 /* Styles for the upload button */
 #buttonUpload {
-    /* Your styles here, e.g., colors, padding, borders, etc. */
     background-color: #4CAF50; /* Green background for upload */
     color: white; /* White text */
     padding: 10px 15px; /* Some padding */
@@ -219,6 +217,23 @@ h3 {
 }
 
 #buttonUpload:hover {
+    background-color: #388E3C; /* Darker shade when hovered */
+}
+
+/* Styles for the Sign in and Sign Up button */
+#buttonSignIn,
+#buttonSignUp {
+    margin-top: 10px;
+    background-color: #4CAF50; /* Green background for upload */
+    color: white; /* White text */
+    padding: 10px 15px; /* Some padding */
+    border: none; /* No border */
+    cursor: pointer; /* Cursor to pointer */
+    border-radius: 4px; /* Rounded corners */
+}
+
+#buttonSignIn:hover,
+#buttonSignUp {
     background-color: #388E3C; /* Darker shade when hovered */
 }
 
