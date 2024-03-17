@@ -523,4 +523,3 @@ document.addEventListener('DOMContentLoaded', async function() {
         console.error("Error displaying images:", error);
     }
 });
-
