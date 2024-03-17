@@ -2,7 +2,7 @@ import { db, storage } from './firebase-init.js';
 import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 import { collection, query, where, getDocs, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut  } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
 // Authentication state observer setup function
 
@@ -160,23 +160,75 @@ async function updateLikes(docId, userId, isLike) {
     }
 }
 
+// Comment Function
+async function displayComments(docId) {
+    const commentsContainer = document.getElementById(`comments-container-${docId}`);
+    const commentsRef = collection(db, `images/${docId}/comments`);
+    const querySnapshot = await getDocs(commentsRef);
+  
+    // Clear previous comments
+    commentsContainer.innerHTML = '';
+  
+    querySnapshot.forEach((doc) => {
+      const commentData = doc.data();
+      const commentElement = document.createElement('p');
+      commentElement.textContent = `${commentData.user}: ${commentData.text}`;
+      commentsContainer.appendChild(commentElement);
+    });
+}
+
+async function submitComment(docId) {
+    const commentInput = document.getElementById(`comment-input-${docId}`);
+    const commentText = commentInput.value.trim();
+    const auth = getAuth();
+    const user = auth.currentUser;
+  
+    if (commentText === '') {
+      alert('Comment cannot be empty.');
+      return;
+    }
+  
+    if (!user) {
+      alert('You must be logged in to post comments.');
+      return;
+    }
+  
+    try {
+      const commentsRef = collection(db, `images/${docId}/comments`);
+      await addDoc(commentsRef, {
+        text: commentText,
+        user: user.email, // Or another identifier like user.uid
+        timestamp: new Date()
+      });
+  
+      // Clear the comment input field
+      commentInput.value = '';
+  
+      // Refresh the comments section to include the new comment
+      await displayComments(docId);
+    } catch (error) {
+      console.error('Error posting comment:', error);
+      alert('Failed to post comment.');
+    }
+  }
+
 // Function to open the image context modal
 async function openImageContextModal(docId) {
     const contextModal = document.getElementById('imageContextModal');
     const contextContent = document.getElementById('imageContextContent');
-    
+
     // Fetch the latest data for the image
     const imageDocRef = doc(db, 'images', docId);
     const imageDocSnap = await getDoc(imageDocRef);
-    
+
     if (imageDocSnap.exists()) {
         const data = imageDocSnap.data();
 
         const dynamicContentHtml = `
             <h3>${data.imageName}</h3>
+            <h4>${data.category}</h4>
             <img src="${data.url}" alt="Image Preview" style="max-width: 100%;"><br>
             <p>Uploader: ${data.author}</p>
-            <p>Category: ${data.category}</p>
             <p>Description: ${data.description}</p>
             <div>
                 <span id="likes-count-${docId}">${data.likes || 0}</span>
@@ -184,13 +236,25 @@ async function openImageContextModal(docId) {
                 <span id="dislikes-count-${docId}">${data.dislikes || 0}</span>
                 <button id="dislike-button-${docId}" aria-label="dislike"><i class="fa fa-thumbs-down"></i></button>
             </div>
+            <h5>Comments</h5>
+            <div id="comments-container-${docId}"></div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <textarea id="comment-input-${docId}" placeholder="Add a comment..." style="flex-grow: 1; height: 100px;"></textarea>
+                <button id="post-comment-button-${docId}" style="flex-shrink: 0;">Post Comment</button>
+            </div>
         `;
 
         contextContent.innerHTML = dynamicContentHtml;
 
+        // Display comments for the image
+        await displayComments(docId);
+
+        // Add event listener to the post comment button
+        document.getElementById(`post-comment-button-${docId}`).addEventListener('click', () => submitComment(docId));
+
         const likeButton = document.getElementById(`like-button-${docId}`);
         const dislikeButton = document.getElementById(`dislike-button-${docId}`);
-        
+
         const auth = getAuth();
         const user = auth.currentUser;
 
