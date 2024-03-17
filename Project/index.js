@@ -42,21 +42,6 @@ function signOutUser() {
     });
 }
 
-// ** SIGN IN AND SIGN UP **
-// Function to open the sign-up modal
-function openSignUpModal() {
-    document.getElementById('signUpModal').style.display = 'block';
-}
-
-// Function to close the sign-up modal
-function closeSignUpModal() {
-    document.getElementById('signUpModal').style.display = 'none';
-}
-
-function closeSignInModal() {
-    document.getElementById('signInModal').style.display = 'none';
-}
-
 // Function to display images by category
 async function displayImagesByCategory(categoryName) {
      // Reference to the container in your HTML where the images will be displayed
@@ -307,12 +292,6 @@ async function openImageContextModal(docId) {
     }
 }
 
-// Close button function
-function closeImageContextModal() {
-    var contextModal = document.getElementById('imageContextModal');
-    contextModal.style.display = 'none';
-}
-
 function highlightNavButton() {
     var sections = document.querySelectorAll('header h2');
     sections.forEach((section, index) => {
@@ -325,77 +304,122 @@ function highlightNavButton() {
     });
 }
 
+// Function to close the sign-up modal
+function closeSignUpModal() {
+    document.getElementById('signUpModal').style.display = 'none';
+}
+
+// Function to close the sign-in modal
+function closeSignInModal() {
+    document.getElementById('signInModal').style.display = 'none';
+}
+
+// Function to close the image context modal
+function closeImageContextModal() {
+    document.getElementById('imageContextModal').style.display = 'none';
+}
+
+// Function to close the upload modal
+function closeUploadModal() {
+    document.getElementById('uploadModal').style.display = 'none';
+}
+
 document.addEventListener('DOMContentLoaded', async function() {
-    
-    // Check the current user on initial load
     onAuthStateChangedListener();
 
-    var modal = document.getElementById('uploadModal');
-    var btn = document.getElementById('openModalButton');
+    // Modal triggers
+    document.getElementById('openModalButton').onclick = () => {
+        document.getElementById('uploadModal').style.display = "block";
+    };
 
-
-    btn.onclick = function() {
-        modal.style.display = "block";
-    }
-
-    document.getElementById('signOutButton').addEventListener('click', signOutUser);
-
-    // Sign Up
-    // Event listener for the Sign Up button to open the modal
-    
-    document.getElementById('signUpButton').addEventListener('click', function() {
+    // User action event listeners
+    document.getElementById('signUpButton').addEventListener('click', () => {
         document.getElementById('signUpModal').style.display = 'block';
     });
-
-    document.getElementById('signUpButton').addEventListener('click', openSignUpModal);
-
-    // Event listener for the close button of the sign-up modal
-    document.getElementById('closeSignUpModalButton').addEventListener('click', closeSignUpModal);
-
-    // Event listener for the sign-up form submission
-    document.getElementById('signUpForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent the form from submitting normally
-
-    // Get email and password input values
-    const email = document.getElementById('signUpEmail').value;
-    const password = document.getElementById('signUpPassword').value;
-    
-    // Regex Check
-    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-    if (!emailRegex.test(email)) {
-        alert('Please enter a valid email address.');
-        return; // Stop the function if the test fails
-    }
-
-    // Firebase authentication logic for signing up
-    const auth = getAuth();
-    createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            // Signed up successfully
-            const user = userCredential.user;
-            console.log('User created:', user.uid);
-            // Close the modal and clear the form
-            closeSignUpModal();
-            document.getElementById('signUpForm').reset();
-        })
-        .catch((error) => {
-            // Handle errors here
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            alert(`Error ${errorCode}: ${errorMessage}`);
-        });
-    });
-
-    // Sign In
-
-    // Set up event listeners for sign-in, sign-up, and sign-out
-    document.getElementById('signInButton').addEventListener('click', function() {
+    document.getElementById('signInButton').addEventListener('click', () => {
         document.getElementById('signInModal').style.display = 'block';
     });
+    document.getElementById('signOutButton').addEventListener('click', signOutUser);
 
-    // Event listener for the close button of the sign-up modal
+    // Modal close action event listeners
+    document.getElementById('closeSignUpModalButton').addEventListener('click', closeSignUpModal);
     document.getElementById('closeSignInModalButton').addEventListener('click', closeSignInModal);
+    document.getElementById('closeImageContextButton').addEventListener('click', closeImageContextModal);
+    document.getElementById('closeUploadModalButton').addEventListener('click', closeUploadModal);
+
+    // Click outside to close modals
+    window.addEventListener('click', function(event) {
+        if (event.target === document.getElementById('imageContextModal')) {
+            closeImageContextModal();
+        }
+        if (event.target === document.getElementById('uploadModal')) {
+            closeUploadModal();
+        }
+        if (event.target === document.getElementById('signInModal')) {
+            closeSignInModal();
+        }
+        if (event.target === document.getElementById('signUpModal')) {
+            closeSignUpModal();
+        }
+    });
+
+    // Escape key to close modals
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            if (document.getElementById('imageContextModal').style.display === 'block') {
+                closeImageContextModal();
+            }
+            if (document.getElementById('uploadModal').style.display === 'block') {
+                closeUploadModal();
+            }
+            if (document.getElementById('signInModal').style.display === 'block') {
+                closeSignInModal();
+            }
+            if (document.getElementById('signUpModal').style.display === 'block') {
+                closeSignUpModal();
+            }
+        }
+    });
+
+    // Form submission event listeners
+    document.getElementById('signUpForm').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent the default form submission behavior
     
+        // Get email and password input values
+        const email = document.getElementById('signUpEmail').value.trim();
+        const password = document.getElementById('signUpPassword').value.trim();
+    
+        // Email format validation using a regular expression
+        const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+        if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address.');
+            return; // Exit the function if the email does not match the regex pattern
+        }
+    
+        // Firebase authentication logic for signing up
+        const auth = getAuth();
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Signed up successfully
+                const user = userCredential.user;
+                console.log('User created:', user.uid);
+    
+                // Close the sign-up modal and reset the form
+                closeSignUpModal();
+                document.getElementById('signUpForm').reset();
+    
+                alert('You have successfully signed up and are now logged in.');
+    
+                // Optionally, update UI or redirect the user
+            })
+            .catch((error) => {
+                // Handle errors, such as email already in use or password too weak
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                alert(`Error ${errorCode}: ${errorMessage}`);
+            });
+    });
+
     document.getElementById('signInForm').addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent the form from submitting normally
     
@@ -423,12 +447,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             });
     });
 
-    document.getElementById('signOutButton').addEventListener('click', function() {
-        signOutUser();
-        alert("You have been signed out.")
-    });
-
-    // Upload Image
     document.getElementById('imageUpload').addEventListener('change', function(event) {
         var reader = new FileReader();
         reader.onload = function() {
@@ -439,7 +457,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         reader.readAsDataURL(event.target.files[0]);
     });
 
-    // Upload Image Button Clicked
     document.getElementById('imageUploadForm').addEventListener('submit', async function(event) {
         event.preventDefault();
         
@@ -494,107 +511,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         modal.style.display = "none";
     });
 
-    // Cancel Button Clicked then reset all fields
     document.getElementById('cancelUpload').addEventListener('click', function() {
         document.getElementById('imageUploadForm').reset();
-        var output = document.getElementById('imagePreview');
-        output.style.display = 'none';
-        output.src = '';
-        modal.style.display = "none";
+        document.getElementById('imagePreview').style.display = 'none';
+        document.getElementById('uploadModal').style.display = "none";
     });
 
-    // When down arrow is pressed on image
-    document.querySelectorAll('.toggle-context').forEach(function(button) {
-        button.addEventListener('click', function() {
-            var imageItem = button.closest('.image-grid-item');
-            var imageSrc = imageItem.querySelector('img').src;
-            var author = imageItem.getAttribute('data-author');
-            var category = imageItem.getAttribute('data-category');
-            var description = imageItem.getAttribute('data-description');
-
-            var contentHtml = `<img src="${imageSrc}" alt="Image Preview" style="max-width: 100%;"><br>` +
-                              `<p>Author: ${author}</p>` +
-                              `<p>Category: ${category}</p>` +
-                              `<p>${description}</p>`;
-            openImageContextModal(contentHtml);
-        });
+    // Display images for each category
+    const categories = ['food', 'fashion', 'sports', 'informative', 'funny', 'history'];
+    categories.forEach(async (category) => {
+        await displayImagesByCategory(category);
     });
-
-    // Navigation bar
-    var navButtons = document.querySelectorAll('.nav-btn');
-    navButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            var targetId = button.getAttribute('data-target');
-            var section = document.getElementById(targetId);
-            section.scrollIntoView({ behavior: 'smooth' });
-
-            navButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-        });
-    });
-
-    window.addEventListener('scroll', function() {
-        highlightNavButton();
-    });
-
-    highlightNavButton();
-
-    const navBar = document.querySelector('.nav_bar');
-    const offset = navBar.offsetTop;
-
-    window.addEventListener('scroll', function() {
-        if (window.pageYOffset >= offset) {
-            navBar.classList.add('fixed');
-        } else {
-            navBar.classList.remove('fixed');
-        }
-    });
-    
-    // Function to close the image context modal
-    function closeImageContextModal() {
-        document.getElementById('imageContextModal').style.display = 'none';
-    }
-
-    // Function to close the upload modal
-    function closeUploadModal() {
-        document.getElementById('uploadModal').style.display = 'none';
-    }
-
-    // Add the click event listeners to the 'X' close buttons
-    document.getElementById('closeImageContextButton').addEventListener('click', closeImageContextModal);
-    document.getElementById('closeUploadModalButton').addEventListener('click', closeUploadModal);
-
-    // Add the click event listener to close the modals if clicking outside of them
-    window.addEventListener('click', function(event) {
-        if (event.target === document.getElementById('imageContextModal')) {
-            closeImageContextModal();
-        }
-        if (event.target === document.getElementById('uploadModal')) {
-            closeUploadModal();
-        }
-    });
-
-    // Add the event listener for the escape key to close the modals
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            if (document.getElementById('imageContextModal').style.display === 'block') {
-                closeImageContextModal();
-            }
-            if (document.getElementById('uploadModal').style.display === 'block') {
-                closeUploadModal();
-            }
-        }
-    });
-
-    // Display images
-    try {
-        await displayImagesByCategory('food');
-        await displayImagesByCategory('fashion');
-        await displayImagesByCategory('sports');
-        await displayImagesByCategory('informative');
-        await displayImagesByCategory('funny');
-        await displayImagesByCategory('history');
-    } catch (error) {
-        console.error("Error displaying images:", error);
-    }
 });
