@@ -9,9 +9,11 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
 <body>
+<section id="aboutSection">
 <center>
     <h1>Echo Gallery</h1>
 </center>
+
 
 <div id="welcomeText" class="welcomeText"></div>
 
@@ -19,14 +21,14 @@
 <div class="nav_bar">
     <div class="top_page_nav">
         <ul> <!-- List for navigation bar text -->
-            <li><button id="about" class="nav-btn active" data-target="aboutHeader">About</button></li>
-            <li><button id="foodImagesButton" class="nav-btn" data-target="foodImagesHeader">Food</button></li>
-            <li><button id="fashionImagesButton" class="nav-btn" data-target="fashionImagesHeader">Fashion</button></li>
-            <li><button id="sportsImagesButton" class="nav-btn" data-target="sportsImagesHeader">Sports</button></li>
-            <li><button id="informativeImagesButton" class="nav-btn" data-target="informativeImagesHeader">Informative</button></li>
-            <li><button id="funnyImagesButton" class="nav-btn" data-target="funnyImagesHeader">Funny</button></li>
-            <li><button id="historyImagesButton" class="nav-btn" data-target="historyImagesHeader">History</button></li>
-            <li><button id="otherImagesButton" class="nav-btn" data-target="otherImagesHeader">Other</button></li>
+            <li><button id="aboutButton" class="nav-btn" data-target="aboutSection">About</button></li>
+            <li><button id="foodImagesButton" class="nav-btn" data-target="foodSection">Food</button></li>
+            <li><button id="fashionImagesButton" class="nav-btn" data-target="fashionSection">Fashion</button></li>
+            <li><button id="sportsImagesButton" class="nav-btn" data-target="sportsSection">Sports</button></li>
+            <li><button id="informativeImagesButton" class="nav-btn" data-target="informativeSection">Informative</button></li>
+            <li><button id="funnyImagesButton" class="nav-btn" data-target="funnySection">Funny</button></li>
+            <li><button id="historyImagesButton" class="nav-btn" data-target="historySection">History</button></li>
+            <li><button id="otherImagesButton" class="nav-btn" data-target="otherSection">Other</button></li>
             <li><button id="signInButton" class="nav-btn">Log In</button></li>
             <div id="signInModal" class="modal">
                 <div class="modal-content">
@@ -112,8 +114,9 @@
 </div>
 
 <!-- Page Content -->
+
 <div class="website-description">
-    <h3 id="aboutHeader">About Echo Gallery</h2>
+    <h2 id="aboutHeader"><h3>About Echo Gallery</h3></h2>
     This is a website where you can upload and view other people's images that they have uploladed. </br> 
     Click on any image and see what the user has put as the description for the image. </br> 
     Feel free to sign up or log in to upload your own images and view them in real time. </br>
@@ -124,8 +127,10 @@
     Email: admin4@echogallery.com Password: admin4 </br>
     Email: admin5@echogallery.com Password: admin5
 </div>
+</section>
 
 <!-- Food Category -->
+<section id="foodSection">
 <header>
     <h2 id="foodImagesHeader">Food</h2>
 </header>
@@ -133,8 +138,10 @@
 <div class="food-images  image-gallery">
     <!-- JavaScript will append image-grid-item elements here -->
 </div>
+</section>
 
 <!-- Fashion Category -->
+<section id="fashionSection">
 <header>
     <h2 id="fashionImagesHeader">Fashion</h2>
 </header>
@@ -142,18 +149,21 @@
 <div class="fashion-images  image-gallery">
     <!-- JavaScript will append image-grid-item elements here -->
 </div>
+</section>
 
 <!-- Sports Category -->
+<section id="sportsSection">
 <header>
     <h2 id="sportsImagesHeader">Sports</h2>
 </header>
-
 <!-- The container where dynamic content will be inserted -->
 <div class="sports-images image-gallery">
     <!-- JavaScript will append image-grid-item elements here -->
 </div>
+</section>
 
 <!-- Informative Category -->
+<section id="informativeSection">
 <header>
     <h2 id="informativeImagesHeader">Informative</h2>
 </header>
@@ -161,8 +171,10 @@
 <div class="informative-images image-gallery">
     <!-- JavaScript will append image-grid-item elements here -->
 </div>
+</section>
 
 <!-- Funny Category -->
+<section id="funnySection"
 <header>
     <h2 id="funnyImagesHeader">Funny</h2>
 </header>
@@ -170,8 +182,10 @@
 <div class="funny-images  image-gallery">
     <!-- JavaScript will append image-grid-item elements here -->
 </div>
+</section>
 
 <!-- History Category -->
+<section id="historySection">
 <header>
     <h2 id="historyImagesHeader">History</h2>
 </header>
@@ -179,8 +193,10 @@
 <div class="history-images  image-gallery">
     <!-- JavaScript will append image-grid-item elements here -->
 </div>
+</section>
 
 <!-- Other Category -->
+<section id="otherSection">
 <header>
     <h2 id="otherImagesHeader">Other</h2>
 </header>
@@ -188,6 +204,7 @@
 <div class="other-images  image-gallery">
     <!-- JavaScript will append image-grid-item elements here -->
 </div>
+</section>
 
 <!-- Image Context Modal -->
 <div id="imageContextModal" class="modal">

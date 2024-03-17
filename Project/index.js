@@ -314,27 +314,37 @@ function closeUploadModal() {
 
 function highlightNavButton() {
     const navbarHeight = document.querySelector('.nav_bar').offsetHeight;
-    const scrollPosition = window.pageYOffset + navbarHeight;
-    const sections = document.querySelectorAll('section');
+    const scrollPosition = window.pageYOffset;
     const navButtons = document.querySelectorAll('.nav-btn');
 
-    // Reset active state for all buttons
+    // Check if the user has scrolled to the top of the page or near the top
+    if (scrollPosition <= navbarHeight) {
+        navButtons.forEach(button => button.classList.remove('active'));
+        document.getElementById('aboutButton').classList.add('active');
+        return;
+    }
 
-    // Find the current section
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop - navbarHeight;
-        const sectionBottom = sectionTop + section.offsetHeight;
+    // Assume no section is active initially
+    let activeSectionFound = false;
 
-        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
-            const targetButtonId = section.getAttribute('id');
-            const activeButton = Array.from(navButtons).find(btn => btn.getAttribute('data-target') === targetButtonId);
+    navButtons.forEach(button => {
+        const targetId = button.getAttribute('data-target');
+        const section = document.getElementById(targetId);
 
-            if (activeButton) {
-                activeButton.classList.add('active');
+        if (section) {
+            const sectionTop = section.offsetTop - navbarHeight;
+            const sectionBottom = sectionTop + section.offsetHeight;
+
+            if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+                button.classList.add('active');
+                activeSectionFound = true;
+            } else {
+                button.classList.remove('active');
             }
         }
     });
 }
+
 
 function scrollToSection(event) {
     // Immediately set the clicked button as active
@@ -348,9 +358,6 @@ function scrollToSection(event) {
         const yOffset = -document.querySelector('.nav_bar').offsetHeight;
         const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
         window.scrollTo({ top: y, behavior: 'smooth' });
-
-        // Call highlightNavButton after a delay to re-evaluate the active section
-        setTimeout(highlightNavButton, 500);
     }
 }
 
@@ -562,11 +569,10 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // Navigation bar
     highlightNavButton();
-    makeNavbarSticky();
     
     document.querySelectorAll('.nav-btn').forEach(button => {
     button.addEventListener('click', function(event) {
-        scrollToSection(event); // Scroll to the section
+        scrollToSection(event); 
     });
     });
 
