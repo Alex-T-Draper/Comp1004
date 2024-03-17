@@ -207,6 +207,11 @@ h5 {
     color: red;
 }
 
+#comments-container {
+    max-height: 200px; /* Adjust the height to fit your design */
+    overflow-y: auto; /* Enables vertical scroll */
+  }
+
 /* Styles for the cancel button */
 #cancelUpload {
     background-color: #f44336; /* Red background for cancel */

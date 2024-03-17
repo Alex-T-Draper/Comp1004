@@ -3,6 +3,8 @@ import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gsta
 import { collection, query, where, getDocs, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
 
 // Authentication state observer setup function
 
@@ -164,16 +166,17 @@ async function updateLikes(docId, userId, isLike) {
 async function displayComments(docId) {
     const commentsContainer = document.getElementById(`comments-container-${docId}`);
     const commentsRef = collection(db, `images/${docId}/comments`);
-    const querySnapshot = await getDocs(commentsRef);
-  
+    const q = query(commentsRef, orderBy("timestamp", "asc")); // Order by timestamp in ascending order
+    const querySnapshot = await getDocs(q);
+
     // Clear previous comments
     commentsContainer.innerHTML = '';
   
     querySnapshot.forEach((doc) => {
-      const commentData = doc.data();
-      const commentElement = document.createElement('p');
-      commentElement.textContent = `${commentData.user}: ${commentData.text}`;
-      commentsContainer.appendChild(commentElement);
+        const commentData = doc.data();
+        const commentElement = document.createElement('p');
+        commentElement.textContent = `${commentData.user}: ${commentData.text}`;
+        commentsContainer.appendChild(commentElement);
     });
 }
 
@@ -194,12 +197,12 @@ async function submitComment(docId) {
     }
   
     try {
-      const commentsRef = collection(db, `images/${docId}/comments`);
-      await addDoc(commentsRef, {
-        text: commentText,
-        user: user.email, // Or another identifier like user.uid
-        timestamp: new Date()
-      });
+        const commentsRef = collection(db, `images/${docId}/comments`);
+        await addDoc(commentsRef, {
+            text: commentText,
+            user: user.email, // Or another identifier like user.uid
+            timestamp: serverTimestamp() // Firebase server timestamp
+        });
   
       // Clear the comment input field
       commentInput.value = '';
@@ -237,10 +240,10 @@ async function openImageContextModal(docId) {
                 <button id="dislike-button-${docId}" aria-label="dislike"><i class="fa fa-thumbs-down"></i></button>
             </div>
             <h5>Comments</h5>
-            <div id="comments-container-${docId}"></div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <textarea id="comment-input-${docId}" placeholder="Add a comment..." style="flex-grow: 1; height: 100px;"></textarea>
-                <button id="post-comment-button-${docId}" style="flex-shrink: 0;">Post Comment</button>
+            <div id="comments-container-${docId}" style="max-height: 150px; overflow-y: auto;"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                <textarea id="comment-input-${docId}" placeholder="Add a comment..." style="width: 85%; height: 50px;"></textarea>
+                <button id="post-comment-button-${docId}" style="width: 100px;">Post Comment</button>
             </div>
         `;
 
@@ -251,6 +254,14 @@ async function openImageContextModal(docId) {
 
         // Add event listener to the post comment button
         document.getElementById(`post-comment-button-${docId}`).addEventListener('click', () => submitComment(docId));
+
+        // Add event listener for the 'Enter' key in the comment input
+        document.getElementById(`comment-input-${docId}`).addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); 
+                submitComment(docId);
+            }
+        });
 
         const likeButton = document.getElementById(`like-button-${docId}`);
         const dislikeButton = document.getElementById(`dislike-button-${docId}`);
