@@ -10,8 +10,14 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     line-height: 1.6;
     padding-top: 30px; /* Space for title */
-    padding-bottom: 60px; /* Space for bottom navigation bar */
 }
+
+.footer {
+    background: #939499;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+  }
 
 /* Header styling */
 h1 {
