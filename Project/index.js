@@ -292,18 +292,6 @@ async function openImageContextModal(docId) {
     }
 }
 
-function highlightNavButton() {
-    var sections = document.querySelectorAll('header h2');
-    sections.forEach((section, index) => {
-        var rect = section.getBoundingClientRect();
-        if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
-            var navButtons = document.querySelectorAll('.nav-btn');
-            navButtons.forEach(button => button.classList.remove('active'));
-            navButtons[index].classList.add('active');
-        }
-    });
-}
-
 // Function to close the sign-up modal
 function closeSignUpModal() {
     document.getElementById('signUpModal').style.display = 'none';
@@ -322,6 +310,59 @@ function closeImageContextModal() {
 // Function to close the upload modal
 function closeUploadModal() {
     document.getElementById('uploadModal').style.display = 'none';
+}
+
+function highlightNavButton() {
+    const navbarHeight = document.querySelector('.nav_bar').offsetHeight;
+    const scrollPosition = window.pageYOffset + navbarHeight;
+    const sections = document.querySelectorAll('section');
+    const navButtons = document.querySelectorAll('.nav-btn');
+
+    // Reset active state for all buttons
+
+    // Find the current section
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop - navbarHeight;
+        const sectionBottom = sectionTop + section.offsetHeight;
+
+        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+            const targetButtonId = section.getAttribute('id');
+            const activeButton = Array.from(navButtons).find(btn => btn.getAttribute('data-target') === targetButtonId);
+
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
+        }
+    });
+}
+
+function scrollToSection(event) {
+    // Immediately set the clicked button as active
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+
+    const targetId = event.currentTarget.getAttribute('data-target');
+    const section = document.getElementById(targetId);
+    
+    if (section) {
+        const yOffset = -document.querySelector('.nav_bar').offsetHeight;
+        const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+
+        // Call highlightNavButton after a delay to re-evaluate the active section
+        setTimeout(highlightNavButton, 500);
+    }
+}
+
+function makeNavbarSticky() {
+    const navBar = document.querySelector('.nav_bar');
+    const stickyOffset = navBar.offsetTop; 
+
+    if (window.pageYOffset > stickyOffset) {
+        navBar.classList.add('sticky');
+    } else {
+        navBar.classList.remove('sticky');
+    }
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -496,7 +537,9 @@ document.addEventListener('DOMContentLoaded', async function() {
                 alert('Image uploaded successfully!');
     
                 document.getElementById('imageUploadForm').reset();
+
                 document.getElementById('imagePreview').style.display = 'none';
+                closeUploadModal();
                 // Update Images on page
                 await displayImagesByCategory(category);
     
@@ -517,9 +560,26 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.getElementById('uploadModal').style.display = "none";
     });
 
+    // Navigation bar
+    highlightNavButton();
+    makeNavbarSticky();
+    
+    document.querySelectorAll('.nav-btn').forEach(button => {
+    button.addEventListener('click', function(event) {
+        scrollToSection(event); // Scroll to the section
+    });
+    });
+
+    // Scroll event for adjusting the active navigation button class
+    window.addEventListener('scroll', function() {
+        highlightNavButton();
+        makeNavbarSticky();
+    });
+
     // Display images for each category
     const categories = ['food', 'fashion', 'sports', 'informative', 'funny', 'history'];
     categories.forEach(async (category) => {
         await displayImagesByCategory(category);
+        highlightNavButton();
     });
 });

@@ -90,6 +90,17 @@ h5 {
     background-color: #04AA6D;
 }
 
+.active {
+    background-color: #04AA6D;
+}
+
+.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    /* Add other styles like background to ensure visibility on top of other content */
+}
+
 
 /* Upload Modal */
 .modal {
