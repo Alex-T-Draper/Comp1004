@@ -208,26 +208,42 @@ h5 {
     cursor: pointer;
 }
 
-/* Like and dilike button */
-.like-button, .dislike-button {
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-    font-size: 1.5em; /* Adjust size as needed */
-}
-
+/* Like and dislike icon styles */
+/* Styles for liked/disliked state */
 .liked {
-    color: green;
+    color: #4CAF50; /* Green color for liked state */
 }
 
 .disliked {
-    color: red;
+    color: #F44336; /* Red color for disliked state */
+}
+
+/* Reaction button styles */
+.reaction-button {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-right: 8px; /* Space between like and dislike buttons */
+}
+
+.reaction-button span {
+    margin-left: 4px; /* Space between icon and count */
+}
+
+.reaction-container {
+    display: flex;
+    justify-content: center; /* Center the icons horizontally if necessary */
+    align-items: center; /* Align the icons vertically */
+    gap: 4px; /* Sets a gap between child elements */
 }
 
 #comments-container {
     max-height: 200px; /* Adjust the height to fit your design */
     overflow-y: auto; /* Enables vertical scroll */
-  }
+}
 
 /* Styles for the cancel button */
 #cancelUpload {
@@ -371,6 +387,7 @@ h5 {
     position: fixed;
     bottom: 20px;
     right: 20px;
+    z-index: 999;
 }
 
 #openModalButton:hover {

@@ -200,7 +200,7 @@ async function submitComment(docId) {
     }
   }
 
-// Function to open the image context modal
+// Function to open the image context modal with relevent data
 async function openImageContextModal(docId) {
     const contextModal = document.getElementById('imageContextModal');
     const contextContent = document.getElementById('imageContextContent');
@@ -211,18 +211,28 @@ async function openImageContextModal(docId) {
 
     if (imageDocSnap.exists()) {
         const data = imageDocSnap.data();
+        const uploadDate = new Date(data.uploadDate);
 
         const dynamicContentHtml = `
             <h3>${data.imageName}</h3>
             <h4>${data.category}</h4>
-            <img src="${data.url}" alt="Image Preview" style="max-width: 100%;"><br>
-            <p>Uploader: ${data.author}</p>
-            <p>Description: ${data.description}</p>
-            <div>
-                <span id="likes-count-${docId}">${data.likes || 0}</span>
-                <button id="like-button-${docId}" aria-label="like"><i class="fa fa-thumbs-up"></i></button>
-                <span id="dislikes-count-${docId}">${data.dislikes || 0}</span>
-                <button id="dislike-button-${docId}" aria-label="dislike"><i class="fa fa-thumbs-down"></i></button>
+            <img src="${data.url}" alt="Image Preview" style="max-width: 100%; margin-top: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                <p>Uploaded by: ${data.author}</p>
+                <p>Uploaded: ${uploadDate.toLocaleDateString()}</p>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                <p>Description: ${data.description}</p>
+                <div class="reaction-container">
+                    <button id="like-button-${docId}" class="reaction-button" aria-label="like">
+                        <span class="material-icons">thumb_up</span>
+                        <span id="likes-count-${docId}">${data.likes || 0}</span>
+                    </button>
+                    <button id="dislike-button-${docId}" class="reaction-button" aria-label="dislike">
+                        <span class="material-icons">thumb_down</span>
+                        <span id="dislikes-count-${docId}">${data.dislikes || 0}</span>
+                    </button>
+                </div>
             </div>
             <h5>Comments</h5>
             <div id="comments-container-${docId}" style="max-height: 150px; overflow-y: auto;"></div>
@@ -312,6 +322,7 @@ function closeUploadModal() {
     document.getElementById('uploadModal').style.display = 'none';
 }
 
+// Function to highlight navigation bar
 function highlightNavButton() {
     const navbarHeight = document.querySelector('.nav_bar').offsetHeight;
     const scrollPosition = window.pageYOffset;
@@ -345,7 +356,7 @@ function highlightNavButton() {
     });
 }
 
-
+// Function to scroll when navigation bar is clicked
 function scrollToSection(event) {
     // Immediately set the clicked button as active
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
@@ -361,6 +372,7 @@ function scrollToSection(event) {
     }
 }
 
+// Function to make navigation bar stick to top when scrolling down
 function makeNavbarSticky() {
     const navBar = document.querySelector('.nav_bar');
     const stickyOffset = navBar.offsetTop; 
@@ -521,6 +533,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         const category = categoryInput.value;
         const description = descriptionInput.value;
         const author = authorInput.value;
+
+        // Get the current date
+        const currentDate = new Date();
     
         if (file) {
             try {
@@ -537,6 +552,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     author: author,
                     likes: 0,
                     dislikes: 0,
+                    uploadDate: currentDate.toISOString(),
                     url: url
                 });
     
