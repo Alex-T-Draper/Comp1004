@@ -5,9 +5,7 @@ import { doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/f
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-
 // Authentication state observer setup function
-
 function onAuthStateChangedListener() {
     const auth = getAuth();
     const welcomeText = document.getElementById('welcomeText');
@@ -147,7 +145,7 @@ async function updateLikes(docId, userId, isLike) {
     }
 }
 
-// Comment Function
+// Display Comment Function
 async function displayComments(docId) {
     const commentsContainer = document.getElementById(`comments-container-${docId}`);
     const commentsRef = collection(db, `images/${docId}/comments`);
@@ -165,6 +163,7 @@ async function displayComments(docId) {
     });
 }
 
+// Submit Comment function
 async function submitComment(docId) {
     const commentInput = document.getElementById(`comment-input-${docId}`);
     const commentText = commentInput.value.trim();
@@ -305,11 +304,13 @@ async function openImageContextModal(docId) {
 // Function to close the sign-up modal
 function closeSignUpModal() {
     document.getElementById('signUpModal').style.display = 'none';
+    document.getElementById('signUpButton').classList.remove('active');
 }
 
 // Function to close the sign-in modal
 function closeSignInModal() {
     document.getElementById('signInModal').style.display = 'none';
+    document.getElementById('signInButton').classList.remove('active');
 }
 
 // Function to close the image context modal
@@ -448,12 +449,19 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Get email and password input values
         const email = document.getElementById('signUpEmail').value.trim();
         const password = document.getElementById('signUpPassword').value.trim();
+        const passwordMatch = document.getElementById('signUpPasswordMatch').value
     
         // Email format validation using a regular expression
         const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
         if (!emailRegex.test(email)) {
             alert('Please enter a valid email address.');
             return; // Exit the function if the email does not match the regex pattern
+        }
+
+        // Check if passwords match
+        if (password != passwordMatch) {
+            alert('Password must match');
+            return;
         }
     
         // Firebase authentication logic for signing up
@@ -587,9 +595,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     highlightNavButton();
     
     document.querySelectorAll('.nav-btn').forEach(button => {
-    button.addEventListener('click', function(event) {
-        scrollToSection(event); 
-    });
+        button.addEventListener('click', function(event) {
+            scrollToSection(event); 
+        });
     });
 
     // Scroll event for adjusting the active navigation button class
@@ -599,7 +607,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     // Display images for each category
-    const categories = ['food', 'fashion', 'sports', 'informative', 'funny', 'history'];
+    const categories = ['food', 'fashion', 'sports', 'informative', 'funny', 'history', 'other'];
     categories.forEach(async (category) => {
         await displayImagesByCategory(category);
         highlightNavButton();
