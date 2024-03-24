@@ -1,9 +1,25 @@
 import { db, storage } from './firebase-init.js';
-import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
-import { collection, query, where, getDocs, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-import { doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import { serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { 
+    ref as storageRef, 
+    uploadBytes, 
+    getDownloadURL 
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+import { 
+    collection, 
+    query, 
+    where, 
+    getDocs, 
+    addDoc, 
+    getDoc, 
+    doc, 
+    runTransaction, 
+    serverTimestamp, 
+    orderBy, 
+    writeBatch 
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+
 
 // Authentication state observer setup function
 function onAuthStateChangedListener() {
@@ -169,7 +185,11 @@ async function submitComment(docId) {
     const commentText = commentInput.value.trim();
     const auth = getAuth();
     const user = auth.currentUser;
-  
+
+    // Set a maximum word limit
+    const maxWordLimit = 100;
+    const wordCount = commentText.split(/\s+/).length; 
+    
     if (commentText === '') {
       alert('Comment cannot be empty.');
       return;
@@ -179,7 +199,12 @@ async function submitComment(docId) {
       alert('You must be logged in to post comments.');
       return;
     }
-  
+
+    if (wordCount > maxWordLimit) {
+        alert(`Comment cannot exceed ${maxWordLimit} words. You have used ${wordCount} words.`);
+        return;
+    }
+
     try {
         const commentsRef = collection(db, `images/${docId}/comments`);
         await addDoc(commentsRef, {
@@ -207,10 +232,18 @@ async function openImageContextModal(docId) {
     // Fetch the latest data for the image
     const imageDocRef = doc(db, 'images', docId);
     const imageDocSnap = await getDoc(imageDocRef);
+    
 
     if (imageDocSnap.exists()) {
         const data = imageDocSnap.data();
         const uploadDate = new Date(data.uploadDate);
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        let deleteButtonHtml = '';
+        if (user && data.uploaderEmail === user.email) { // Use the new uploaderEmail field for comparison
+            deleteButtonHtml = `<button onclick="deletePost('${docId}')" class="delete-button">Delete Post</button>`;
+        }
 
         const dynamicContentHtml = `
             <h3>${data.imageName}</h3>
@@ -233,7 +266,10 @@ async function openImageContextModal(docId) {
                     </button>
                 </div>
             </div>
-            <h5>Comments</h5>
+            <div style="display: flex; justify-content: space-between;">
+                <h5>Comments</h5>
+                ${deleteButtonHtml}
+            </div>
             <div id="comments-container-${docId}" style="max-height: 150px; overflow-y: auto;"></div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
                 <textarea id="comment-input-${docId}" placeholder="Add a comment..." style="width: 85%; height: 50px;"></textarea>
@@ -242,6 +278,14 @@ async function openImageContextModal(docId) {
         `;
 
         contextContent.innerHTML = dynamicContentHtml;
+
+        // If the delete button exists, add an event listener to it
+        const deleteButton = contextContent.querySelector('.delete-button');
+        if (deleteButton) {
+            deleteButton.addEventListener('click', function() {
+                deletePost(docId);
+            });
+        }
 
         // Display comments for the image
         await displayComments(docId);
@@ -259,9 +303,6 @@ async function openImageContextModal(docId) {
 
         const likeButton = document.getElementById(`like-button-${docId}`);
         const dislikeButton = document.getElementById(`dislike-button-${docId}`);
-
-        const auth = getAuth();
-        const user = auth.currentUser;
 
         // Function to set button styles based on user's previous reactions
         const setUserReactionStyles = (like, dislike) => {
@@ -298,6 +339,45 @@ async function openImageContextModal(docId) {
         contextModal.style.display = 'block';
     } else {
         console.error('No such document!');
+    }
+}
+
+// Function to delete a post and comments
+async function deletePost(docId) {
+    const confirmation = confirm('Are you sure you want to delete this post?');
+
+    if (!confirmation) {
+        return;
+    }
+
+    // Start a batch operation as we have image and subcollection comments
+    const batch = writeBatch(db);
+
+    // Reference to the image document
+    const imageDocRef = doc(db, 'images', docId);
+    batch.delete(imageDocRef);
+
+    // Reference to the comments subcollection of the image
+    const commentsCollectionRef = collection(db, `images/${docId}/comments`);
+
+    try {
+        // Get all comments associated with the image
+        const commentsSnapshot = await getDocs(commentsCollectionRef);
+        commentsSnapshot.forEach((commentDoc) => {
+            batch.delete(commentDoc.ref);
+        });
+
+        // Commit the batch to delete the image and all comments
+        await batch.commit();
+        alert('The post has been deleted.');
+        closeImageContextModal(); 
+        const imageElement = document.querySelector(`[data-id="${docId}"]`);
+        if (imageElement) {
+            imageElement.remove();
+        }
+    } catch (error) {
+        console.error('Error deleting post and comments:', error);
+        alert('An error occurred while trying to delete the post.');
     }
 }
 
@@ -515,6 +595,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             });
     });
 
+    // Image Upload
     document.getElementById('imageUpload').addEventListener('change', function(event) {
         var reader = new FileReader();
         reader.onload = function() {
@@ -527,6 +608,14 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     document.getElementById('imageUploadForm').addEventListener('submit', async function(event) {
         event.preventDefault();
+
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if (!user) {
+            alert('You must be logged in to upload images.');
+            return;
+        }
         
         // Retrieve all form inputs
         const fileInput = document.getElementById('imageUpload');
@@ -541,6 +630,31 @@ document.addEventListener('DOMContentLoaded', async function() {
         const category = categoryInput.value;
         const description = descriptionInput.value;
         const author = authorInput.value;
+        const uploaderEmail = user.email;
+
+        const maxWordLimitImageName = 5;
+        const maxWordLimitDescription = 100;
+        const maxWordLimitAuthor = 4;
+
+        // Regex for length
+        const wordCountImageName = description.split(/\s+/).length
+        const wordCountDescription = description.split(/\s+/).length;
+        const wordCountAuthor = author.split(/\s+/).length;
+
+        if (wordCountAuthor > maxWordLimitAuthor){
+            alert(`Author name cannot exceed ${maxWordLimitAuthor} words. You have used ${wordCountAuthor} words.`)
+            return;
+        }
+
+        if (wordCountImageName > maxWordLimitImageName){
+            alert(`Image name cannot exceed ${maxWordLimitAuthor} words. You have used ${wordCountAuthor} words.`)
+            return;
+        }
+
+        if (wordCountDescription > maxWordLimitDescription) {
+            alert(`Description cannot exceed ${maxWordLimitDescription} words. You have used ${wordCount} words.`);
+            return;
+        }
 
         // Get the current date
         const currentDate = new Date();
@@ -558,6 +672,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     category: category,
                     description: description,
                     author: author,
+                    uploaderEmail: uploaderEmail,
                     likes: 0,
                     dislikes: 0,
                     uploadDate: currentDate.toISOString(),
