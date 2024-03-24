@@ -1,25 +1,7 @@
 import { db, storage } from './firebase-init.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import { 
-    ref as storageRef, 
-    uploadBytes, 
-    getDownloadURL 
-} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
-import { 
-    collection, 
-    query, 
-    where, 
-    getDocs, 
-    addDoc, 
-    getDoc, 
-    doc, 
-    runTransaction, 
-    serverTimestamp, 
-    orderBy, 
-    writeBatch 
-} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-
-
+import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
+import { collection, query, where, getDocs, addDoc, getDoc, doc, runTransaction, serverTimestamp, orderBy, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 // Authentication state observer setup function
 function onAuthStateChangedListener() {
