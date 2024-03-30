@@ -112,7 +112,7 @@ h5 {
 .modal {
     display: none;
     position: fixed;
-    z-index: 1;
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
@@ -338,7 +338,7 @@ h5 {
 /* Image Gallery */
 .image-gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjust '200px' to the min width of each image */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjust '200px' to the min width of each image */
     gap: 20px; /* Adjust the gap between images if necessary */
     justify-items: center; /* Center items in the grid */
     align-items: center; /* Align items vertically */
@@ -348,7 +348,7 @@ h5 {
 /* Individual Image Items */
 .image-grid-item {
     position: relative; /* For absolute positioning of children */
-    width: 200px; /* Set a fixed width for the images */
+    width: 250px; /* Set a fixed width for the images */
     height: auto; /* Keep the height auto to maintain aspect ratio */
     margin: 0 auto; /* Center if grid column width is larger than image width */
 }
@@ -424,37 +424,3 @@ h5 {
 #openModalButton:hover {
     background-color: #037d56;
 }
-
-/* Additional styles for responsiveness */
-@media (max-width: 768px) {
-    .image-gallery {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 480px) {
-    .image-gallery {
-        grid-template-columns: 1fr;
-    }
-
-    .nav_bar li, .bottom-nav li {
-        display: block;
-        margin-bottom: 10px;
-    }
-
-    .nav_bar button, .bottom-nav button {
-        display: block;
-        width: 100%;
-    }
-}
-
-/* Image Context Button Clicked */
-.image-grid-item.enlarged {
-    grid-column: span 3; /* Or however many columns you want it to span */
-    transition: transform 0.3s ease;
-  }
-  
-  .image-grid-item.enlarged img {
-    width: 100%; /* Adjust if you want to set a specific width */
-    height: auto; /* Maintain aspect ratio */
-  }
