@@ -753,7 +753,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const maxWordLimitAuthor = 4;
 
         // Regex for length
-        const wordCountImageName = description.split(/\s+/).length
+        const wordCountImageName = imageName.split(/\s+/).length
         const wordCountDescription = description.split(/\s+/).length;
         const wordCountAuthor = author.split(/\s+/).length;
 
@@ -763,7 +763,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
 
         if (wordCountImageName > maxWordLimitImageName){
-            alert(`Image name cannot exceed ${maxWordLimitAuthor} words. You have used ${wordCountAuthor} words.`)
+            alert(`Image name cannot exceed ${maxWordLimitImageName} words. You have used ${wordCountImageName} words.`)
             return;
         }
 
