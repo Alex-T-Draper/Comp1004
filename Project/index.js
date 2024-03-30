@@ -1,7 +1,7 @@
 import { db, storage } from './firebase-init.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
-import { collection, query, where, getDocs, addDoc, getDoc, doc, runTransaction, serverTimestamp, orderBy, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { collection, query, where, getDocs, addDoc, getDoc, updateDoc, doc, runTransaction, serverTimestamp, orderBy, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 // Authentication state observer setup function
 function onAuthStateChangedListener() {
@@ -204,7 +204,7 @@ async function submitComment(docId) {
       console.error('Error posting comment:', error);
       alert('Failed to post comment.');
     }
-  }
+}
 
 // Function to open the image context modal with relevent data
 async function openImageContextModal(docId) {
@@ -227,16 +227,21 @@ async function openImageContextModal(docId) {
             deleteButtonHtml = `<button onclick="deletePost('${docId}')" class="delete-button">Delete Post</button>`;
         }
 
+        let editButtonHtml = '';
+        if (user && data.uploaderEmail === user.email) {
+            editButtonHtml = `<button id="editButton-${docId}" class="edit-button">Edit Details</button>`;
+        }
+
         const dynamicContentHtml = `
-            <h3>${data.imageName}</h3>
-            <h4>${data.category}</h4>
+            <h3 class="image-detail image-imageName">${data.imageName}</h3>
+            <h4 class="image-detail image-category">${data.category}</h4>
             <img src="${data.url}" alt="Image Preview" style="max-width: 100%; margin-top: 10px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-                <p>Uploaded by: ${data.author}</p>
+                <p><span class="static-text">Uploaded by: </span><span class="image-detail image-author">${data.author}</span></p>
                 <p>Uploaded: ${uploadDate.toLocaleDateString()}</p>
             </div>
             <div style="display: flex; justify-content: space-between; margin-top: 10px;">
-                <p>Description: ${data.description}</p>
+                <p><span class="static-text">Description: </span><span class="image-detail image-description">${data.description}</span></p>
                 <div class="reaction-container">
                     <button id="like-button-${docId}" class="reaction-button" aria-label="like">
                         <span class="material-icons">thumb_up</span>
@@ -251,6 +256,7 @@ async function openImageContextModal(docId) {
             <div style="display: flex; justify-content: space-between;">
                 <h5>Comments</h5>
                 ${deleteButtonHtml}
+                ${editButtonHtml}
             </div>
             <div id="comments-container-${docId}" style="max-height: 150px; overflow-y: auto;"></div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
@@ -261,11 +267,18 @@ async function openImageContextModal(docId) {
 
         contextContent.innerHTML = dynamicContentHtml;
 
-        // If the delete button exists, add an event listener to it
+        // If the delete button or edit button exists add an event listener to it
         const deleteButton = contextContent.querySelector('.delete-button');
         if (deleteButton) {
             deleteButton.addEventListener('click', function() {
                 deletePost(docId);
+            });
+        }
+
+        const editButton = document.getElementById(`editButton-${docId}`);
+        if (editButton) {
+            editButton.addEventListener('click', function() {
+                toggleEdit(docId, this);
             });
         }
 
@@ -321,6 +334,125 @@ async function openImageContextModal(docId) {
         contextModal.style.display = 'block';
     } else {
         console.error('No such document!');
+    }
+}
+
+// Toggle between edit and view mode
+function toggleEdit(docId, buttonElement) {
+    const isEditing = buttonElement.textContent === 'Edit Details';
+    const detailsFields = ['imageName', 'category', 'description', 'author'];
+
+    // If currently editing, switch to save mode
+    if (isEditing) {
+        buttonElement.textContent = 'Save Changes';
+
+        // Store the old category in the dataset of the button
+        const categoryElement = document.querySelector(`#imageContextContent .image-category`);
+        buttonElement.dataset.oldCategory = categoryElement.textContent.trim();
+
+        // Convert each detail field into an editable input or select
+        detailsFields.forEach(field => {
+            const fieldElement = document.querySelector(`.image-${field}`);
+            if (fieldElement) {
+                if (field === 'category') {
+                    // Create and populate the select element for category
+                    const selectElement = document.createElement('select');
+                    selectElement.innerHTML = `
+                        <option value="food">Food</option>
+                        <option value="fashion">Fashion</option>
+                        <option value="sports">Sports</option>
+                        <option value="informative">Informative</option>
+                        <option value="funny">Funny</option>
+                        <option value="history">History</option>
+                        <option value="other">Other</option>
+                    `;
+                    selectElement.value = fieldElement.textContent; 
+                    selectElement.classList.add('image-detail-input');
+                    selectElement.dataset.field = field;
+                    fieldElement.textContent = '';
+                    fieldElement.appendChild(selectElement);
+                } else {
+                    // Create an input element for other fields
+                    const inputElement = document.createElement('input');
+                    inputElement.type = 'text';
+                    inputElement.value = fieldElement.textContent;
+                    inputElement.classList.add('image-detail-input');
+                    inputElement.dataset.field = field;
+                    fieldElement.textContent = '';
+                    fieldElement.appendChild(inputElement);
+                }
+            } else {
+                console.error(`Element with class .image-${field} not found.`);
+            }
+        });
+    } else {
+        // Collect updated data from input fields
+        const updatedData = {};
+        let isDataValid = true;
+
+        detailsFields.forEach(field => {
+            const inputElement = document.querySelector(`.image-detail-input[data-field="${field}"]`);
+            if (inputElement) {
+                // Validate that the field is not empty
+                if ((field === 'description' || field === 'author' || field === 'imageName') && !inputElement.value.trim()) {
+                    const fieldNameFormatted = field.split(/(?=[A-Z])/).join(" ").replace(/^\w/, c => c.toUpperCase());
+                    alert(`${fieldNameFormatted} cannot be empty.`);
+                    inputElement.focus();
+                    isDataValid = false;
+                    return; // Early return from forEach loop
+                }
+                updatedData[field] = field === 'category' ? inputElement.value : inputElement.value.trim();
+            }
+        });
+
+        if (!isDataValid) {
+            return; // Stop the save operation if the data is invalid
+        }
+
+        // Update Firestore document
+        const oldCategory = buttonElement.dataset.oldCategory;
+        updateImageDetails(docId, updatedData, oldCategory);
+        delete buttonElement.dataset.oldCategory;
+
+        buttonElement.textContent = 'Edit Details';
+
+        // Replace inputs and selects with plain text
+        detailsFields.forEach(field => {
+            const fieldElement = document.querySelector(`.image-${field}`);
+            if (field === 'category') {
+                // Replace the select element with plain text
+                const selectElement = fieldElement.querySelector('select');
+                fieldElement.textContent = selectElement.options[selectElement.selectedIndex].text;
+            } else {
+                // Replace the input element with plain text
+                const inputElement = fieldElement.querySelector('input');
+                fieldElement.textContent = inputElement.value;
+            }
+        });
+    }
+}
+
+// Firestore update on edit
+async function updateImageDetails(docId, updatedData, oldCategory) {
+    const imageDocRef = doc(db, 'images', docId);
+    
+    try {
+        await updateDoc(imageDocRef, updatedData);
+        alert('Image details updated successfully.');
+
+        // Check if category has changed and remove the image from the old category
+        if (oldCategory !== updatedData.category) {
+            const oldCategoryContainer = document.querySelector(`.${oldCategory}-images`);
+            const imageElement = oldCategoryContainer ? oldCategoryContainer.querySelector(`[data-id="${docId}"]`) : null;
+            if (imageElement) {
+                oldCategoryContainer.removeChild(imageElement); 
+            }
+            await displayImagesByCategory(updatedData.category);
+        }
+        closeImageContextModal();
+    } catch (error) {
+        console.error('Error updating image details:', error);
+        alert('An error occurred while updating the details. Please try again.');
     }
 }
 
