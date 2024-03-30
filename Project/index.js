@@ -748,9 +748,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         const author = authorInput.value;
         const uploaderEmail = user.email;
 
-        const maxWordLimitImageName = 5;
+        const maxWordLimitImageName = 7;
         const maxWordLimitDescription = 100;
-        const maxWordLimitAuthor = 4;
+        const maxWordLimitAuthor = 5;
 
         // Regex for length
         const wordCountImageName = imageName.split(/\s+/).length
