@@ -735,6 +735,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('imageUploadForm').addEventListener('submit', async function(event) {
         event.preventDefault();
 
+        const submitButton = document.getElementById('buttonUpload');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Uploading...';
+
         const auth = getAuth();
         const user = auth.currentUser;
 
@@ -742,7 +746,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             alert('You must be logged in to upload images.');
             return;
         }
-        
+
         // Retrieve all form inputs
         const fileInput = document.getElementById('imageUpload');
         const imageNameInput = document.getElementById('imageName'); 
@@ -822,7 +826,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         } else {
             alert('Please select a file to upload.');
         }
-    
+
+        submitButton.disabled = false;
+        submitButton.textContent = 'Upload';
         modal.style.display = "none";
     });
 
