@@ -157,7 +157,7 @@ async function updateLikes(docId, userId, isLike) {
 async function displayComments(docId) {
     const commentsContainer = document.getElementById(`comments-container-${docId}`);
     const commentsRef = collection(db, `images/${docId}/comments`);
-    const q = query(commentsRef, orderBy("timestamp", "asc")); // Order by timestamp in ascending order
+    const q = query(commentsRef, orderBy("timestamp", "asc")); // Order by timestamp
     const querySnapshot = await getDocs(q);
 
     // Clear previous comments
@@ -201,7 +201,7 @@ async function submitComment(docId) {
         const commentsRef = collection(db, `images/${docId}/comments`);
         await addDoc(commentsRef, {
             text: commentText,
-            user: user.email, // Or another identifier like user.uid
+            user: user.email, 
             timestamp: serverTimestamp() // Firebase server timestamp
         });
   
@@ -232,8 +232,9 @@ async function openImageContextModal(docId) {
         const auth = getAuth();
         const user = auth.currentUser;
 
+        // If user is logged in show these buttons
         let deleteButtonHtml = '';
-        if (user && data.uploaderEmail === user.email) { // Use the new uploaderEmail field for comparison
+        if (user && data.uploaderEmail === user.email) {
             deleteButtonHtml = `<button onclick="deletePost('${docId}')" class="delete-button">Delete Post</button>`;
         }
 
@@ -242,6 +243,7 @@ async function openImageContextModal(docId) {
             editButtonHtml = `<button id="editButton-${docId}" class="edit-button">Edit Details</button>`;
         }
 
+        // Load the content for the image
         const dynamicContentHtml = `
             <h3 class="image-detail image-imageName">${data.imageName}</h3>
             <h4 class="image-detail image-category">${data.category}</h4>
@@ -367,7 +369,7 @@ function toggleEdit(docId, buttonElement) {
             const fieldElement = document.querySelector(`.image-${field}`);
             if (fieldElement) {
                 if (field === 'category') {
-                    // Create and populate the select element for category
+                    // Select element for category
                     const selectElement = document.createElement('select');
                     selectElement.innerHTML = `
                         <option value="food">Food</option>
@@ -411,14 +413,14 @@ function toggleEdit(docId, buttonElement) {
                     alert(`${fieldNameFormatted} cannot be empty.`);
                     inputElement.focus();
                     isDataValid = false;
-                    return; // Early return from forEach loop
+                    return;
                 }
                 updatedData[field] = field === 'category' ? inputElement.value : inputElement.value.trim();
             }
         });
 
         if (!isDataValid) {
-            return; // Stop the save operation if the data is invalid
+            return; // Stop if the data is invalid
         }
 
         // Update Firestore document
@@ -542,7 +544,7 @@ function highlightNavButton() {
         return;
     }
 
-    // Assume no section is active initially
+    // No section is active initially
     let activeSectionFound = false;
 
     navButtons.forEach(button => {
@@ -565,7 +567,7 @@ function highlightNavButton() {
 
 // Function to scroll when navigation bar is clicked
 function scrollToSection(event) {
-    // Immediately set the clicked button as active
+    // Set the clicked button as active
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
     event.currentTarget.classList.add('active');
 
@@ -661,7 +663,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
         if (!emailRegex.test(email)) {
             alert('Please enter a valid email address.');
-            return; // Exit the function if the email does not match the regex pattern
+            return; 
         }
 
         // Check if passwords match
@@ -678,16 +680,13 @@ document.addEventListener('DOMContentLoaded', async function() {
                 const user = userCredential.user;
                 console.log('User created:', user.uid);
     
-                // Close the sign-up modal and reset the form
                 closeSignUpModal();
                 document.getElementById('signUpForm').reset();
     
                 alert('You have successfully signed up and are now logged in.');
-    
-                // Optionally, update UI or redirect the user
             })
             .catch((error) => {
-                // Handle errors, such as email already in use or password too weak
+                // Handle errors
                 const errorCode = error.code;
                 const errorMessage = error.message;
                 alert(`Error ${errorCode}: ${errorMessage}`);
@@ -708,13 +707,12 @@ document.addEventListener('DOMContentLoaded', async function() {
                 // Signed in successfully
                 const user = userCredential.user;
                 console.log('User signed in:', user.uid);
-                // Optionally, close the modal and clear the form here
+
                 document.getElementById('signInModal').style.display = 'none';
                 document.getElementById('signInForm').reset();
-                // Redirect or update UI as needed
             })
             .catch((error) => {
-                // Handle errors here, such as incorrect email or password
+                // Handle errors
                 const errorCode = error.code;
                 const errorMessage = error.message;
                 alert(`Error ${errorCode}: ${errorMessage}`);
@@ -847,7 +845,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     });
 
-    // Scroll event for adjusting the active navigation button class
     window.addEventListener('scroll', function() {
         highlightNavButton();
         makeNavbarSticky();
