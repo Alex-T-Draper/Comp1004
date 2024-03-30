@@ -101,43 +101,53 @@ async function updateLikes(docId, userId, isLike) {
             let dislikes = data.dislikes;
             let reactionData = userReaction.data() || { like: false, dislike: false };
 
-            // Update the counts only if the user hasn't already reacted in this way
-            if (isLike && !reactionData.like) {
-                likes++; // Increment likes if the user is liking the image
-                if (reactionData.dislike) {
-                    dislikes--; // Decrement dislikes if the user previously disliked
-                }
-            } else if (!isLike && !reactionData.dislike) {
-                dislikes++; // Increment dislikes if the user is disliking the image
+            // Determine the new like/dislike state
+            if (isLike) {
                 if (reactionData.like) {
-                    likes--; // Decrement likes if the user previously liked
+                    // If user already liked the image, decrement likes
+                    likes--;
+                    reactionData.like = false;
+                } else {
+                    // If user hasn't liked it yet, increment likes
+                    likes++;
+                    // If user previously disliked, decrement dislikes
+                    if (reactionData.dislike) {
+                        dislikes--;
+                        reactionData.dislike = false;
+                    }
+                    reactionData.like = true;
+                }
+            } else {
+                if (reactionData.dislike) {
+                    // If user already disliked the image, decrement dislikes
+                    dislikes--;
+                    reactionData.dislike = false;
+                } else {
+                    // If user hasn't disliked it yet, increment dislikes
+                    dislikes++;
+                    // If user previously liked, decrement likes
+                    if (reactionData.like) {
+                        likes--;
+                        reactionData.like = false;
+                    }
+                    reactionData.dislike = true;
                 }
             }
-
-            // Update the user's reaction
-            reactionData.like = isLike;
-            reactionData.dislike = !isLike;
 
             transaction.update(imageDocRef, { likes, dislikes });
             transaction.set(userReactionRef, reactionData);
 
-            return { likes, dislikes }; // This will be the result of the transaction
+            return { likes, dislikes, reactionData }; // Return the new reaction data
         });
 
-        // Transaction is successful
-        document.getElementById(`likes-count-${docId}`).textContent = transactionResult.likes;
-        document.getElementById(`dislikes-count-${docId}`).textContent = transactionResult.dislikes;
-
-        // After the transaction, update the button colors
+        // Update the UI based on the new reaction data
         const likeButtonElement = document.getElementById(`like-button-${docId}`);
         const dislikeButtonElement = document.getElementById(`dislike-button-${docId}`);
-        if (isLike) {
-            likeButtonElement.classList.add('liked');
-            dislikeButtonElement.classList.remove('disliked');
-        } else {
-            dislikeButtonElement.classList.add('disliked');
-            likeButtonElement.classList.remove('liked');
-        }
+        likeButtonElement.classList.toggle('liked', transactionResult.reactionData.like);
+        dislikeButtonElement.classList.toggle('disliked', transactionResult.reactionData.dislike);
+
+        document.getElementById(`likes-count-${docId}`).textContent = transactionResult.likes;
+        document.getElementById(`dislikes-count-${docId}`).textContent = transactionResult.dislikes;
     } catch (error) {
         console.error("Transaction failed: ", error);
     }
