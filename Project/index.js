@@ -255,8 +255,10 @@ async function openImageContextModal(docId) {
             </div>
             <div style="display: flex; justify-content: space-between;">
                 <h5>Comments</h5>
+                <div class="reaction-container">
                 ${deleteButtonHtml}
                 ${editButtonHtml}
+                </div>
             </div>
             <div id="comments-container-${docId}" style="max-height: 150px; overflow-y: auto;"></div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">

@@ -230,8 +230,24 @@ h5 {
 }
 
 .delete-button:hover {
-    background-color: #d32f2f; /* Darker shade when hovered */
+    background-color: #d32f2f;
 }
+
+.edit-button {
+    font-size: 12px; /* Smaller font size */
+    padding: 5px 10px; /* Smaller padding */
+    margin-bottom: 10px; /* Space above the comments section */
+    background-color: #4CAF50; /* Red background for delete */
+    color: white; /* White text color */
+    border: none; /* No border */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+.edit-button:hover {
+    background-color: #388E3C; /* Darker shade when hovered */
+}
+
 
 /* Reaction button styles */
 .reaction-button {
