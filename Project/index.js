@@ -573,7 +573,7 @@ function scrollToSection(event) {
 
     const targetId = event.currentTarget.getAttribute('data-target');
     const section = document.getElementById(targetId);
-    
+    // Account for size of nav bar
     if (section) {
         const yOffset = -document.querySelector('.nav_bar').offsetHeight;
         const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
@@ -585,7 +585,7 @@ function scrollToSection(event) {
 function makeNavbarSticky() {
     const navBar = document.querySelector('.nav_bar');
     const stickyOffset = navBar.offsetTop; 
-
+    // Make nav bar sticky
     if (window.pageYOffset > stickyOffset) {
         navBar.classList.add('sticky');
     } else {
