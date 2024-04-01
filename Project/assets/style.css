@@ -9,7 +9,7 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     line-height: 1.6;
-    padding-top: 30px; /* Space for title */
+    padding-top: 30px; 
 }
 
 .footer {
@@ -24,7 +24,7 @@ h1 {
     background: #fff;
     padding: 20px 0;
     color: #333;
-    margin-bottom: 20px; /* Space below the title */
+    margin-bottom: 20px; 
 }
 
 h2 {
@@ -48,16 +48,15 @@ h5 {
 
 .welcomeText {
     text-align: right;
-    padding-right: 20px; /* Adjust as necessary for spacing */
-    /* Add any additional styling such as color, font-size here */
+    padding-right: 20px;
 }
 
 .website-description {
     text-align: center;
     width: 50%;
     border: 3px solid #888;
-    padding: 10px; /* Add padding to the inside of the border */
-    margin: auto; /* Add margin to the outside of the border */
+    padding: 10px;
+    margin: auto;
     margin-top: 20px;
 }
 
@@ -69,7 +68,7 @@ h5 {
     text-align: center;
     padding: 10px 0;
     width: 100%;
-    z-index: 10; /* High z-index to ensure nav bar is above other content */
+    z-index: 10;
 }
 
 /* Fixed Navigation Bar */
@@ -104,7 +103,6 @@ h5 {
     position: fixed;
     top: 0;
     width: 100%;
-    /* Add other styles like background to ensure visibility on top of other content */
 }
 
 
@@ -185,13 +183,13 @@ h5 {
 /* Styles for buttons to be closer together */
 .modal-content .button-container {
     display: flex;
-    justify-content: center; /* Center the buttons */
+    justify-content: center;
     width: 100%;
 }
 
 .modal-content button {
     padding: 10px 15px;
-    margin: 0 8px; /* Reduced space on the sides of the buttons */
+    margin: 0 8px;
 }
 
 .close {
@@ -209,7 +207,6 @@ h5 {
 }
 
 /* Like and dislike icon styles */
-/* Styles for liked/disliked state */
 .liked {
     color: #4CAF50; /* Green color for liked state */
 }
@@ -218,13 +215,13 @@ h5 {
     color: #F44336; /* Red color for disliked state */
 }
 
-.delete-button {
-    font-size: 12px; /* Smaller font size */
-    padding: 5px 10px; /* Smaller padding */
+.delete-button, .edit-button {
+    font-size: 12px; 
+    padding: 5px 10px;
     margin-bottom: 10px; /* Space above the comments section */
     background-color: #f44336; /* Red background for delete */
-    color: white; /* White text color */
-    border: none; /* No border */
+    color: white; 
+    border: none; 
     border-radius: 4px; /* Rounded corners */
     cursor: pointer; /* Pointer cursor on hover */
 }
@@ -234,18 +231,11 @@ h5 {
 }
 
 .edit-button {
-    font-size: 12px; /* Smaller font size */
-    padding: 5px 10px; /* Smaller padding */
-    margin-bottom: 10px; /* Space above the comments section */
-    background-color: #4CAF50; /* Red background for delete */
-    color: white; /* White text color */
-    border: none; /* No border */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor on hover */
+    background-color: #4CAF50; 
 }
 
 .edit-button:hover {
-    background-color: #388E3C; /* Darker shade when hovered */
+    background-color: #388E3C;
 }
 
 
@@ -257,18 +247,18 @@ h5 {
     border: none;
     cursor: pointer;
     padding: 0;
-    margin-right: 8px; /* Space between like and dislike buttons */
+    margin-right: 8px; 
 }
 
 .reaction-button span {
-    margin-left: 4px; /* Space between icon and count */
+    margin-left: 4px; 
 }
 
 .reaction-container {
     display: flex;
-    justify-content: center; /* Center the icons horizontally if necessary */
-    align-items: center; /* Align the icons vertically */
-    gap: 4px; /* Sets a gap between child elements */
+    justify-content: center; 
+    align-items: center; 
+    gap: 4px; 
 }
 
 #comments-container {
@@ -278,48 +268,48 @@ h5 {
 
 /* Styles for the cancel button */
 #cancelUpload {
-    background-color: #f44336; /* Red background for cancel */
-    color: white; /* White text */
-    padding: 10px 15px; /* Some padding */
-    border: none; /* No border */
-    cursor: pointer; /* Cursor to pointer */
-    border-radius: 4px; /* Rounded corners */
-    margin-right: 10px; /* Margin to the right */
+    background-color: #f44336; 
+    color: white; 
+    padding: 10px 15px; 
+    border: none; 
+    cursor: pointer; 
+    border-radius: 4px; 
+    margin-right: 10px; 
 }
 
 #cancelUpload:hover {
-    background-color: #d32f2f; /* Darker shade when hovered */
+    background-color: #d32f2f;
 }
 
 /* Styles for the upload button */
 #buttonUpload {
-    background-color: #4CAF50; /* Green background for upload */
-    color: white; /* White text */
-    padding: 10px 15px; /* Some padding */
-    border: none; /* No border */
-    cursor: pointer; /* Cursor to pointer */
-    border-radius: 4px; /* Rounded corners */
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px; 
+    border: none; 
+    cursor: pointer; 
+    border-radius: 4px; 
 }
 
 #buttonUpload:hover {
-    background-color: #388E3C; /* Darker shade when hovered */
+    background-color: #388E3C;
 }
 
 /* Styles for the Sign in and Sign Up button */
 #buttonSignIn,
 #buttonSignUp {
     margin-top: 10px;
-    background-color: #4CAF50; /* Green background for upload */
-    color: white; /* White text */
-    padding: 10px 15px; /* Some padding */
-    border: none; /* No border */
-    cursor: pointer; /* Cursor to pointer */
-    border-radius: 4px; /* Rounded corners */
+    background-color: #4CAF50; 
+    color: white; 
+    padding: 10px 15px; 
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
 }
 
 #buttonSignIn:hover,
 #buttonSignUp {
-    background-color: #388E3C; /* Darker shade when hovered */
+    background-color: #388E3C; 
 }
 
 #signOutButton {
@@ -338,8 +328,8 @@ h5 {
 /* Image Gallery */
 .image-gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjust '200px' to the min width of each image */
-    gap: 20px; /* Adjust the gap between images if necessary */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    gap: 20px; 
     justify-items: center; /* Center items in the grid */
     align-items: center; /* Align items vertically */
     padding: 20px; /* Padding around the gallery */
@@ -350,7 +340,7 @@ h5 {
     position: relative; /* For absolute positioning of children */
     width: 250px; /* Set a fixed width for the images */
     height: auto; /* Keep the height auto to maintain aspect ratio */
-    margin: 0 auto; /* Center if grid column width is larger than image width */
+    margin: 0 auto;
 }
 
 /* Styling for Images Within Grid Items */
@@ -363,13 +353,13 @@ h5 {
 /* Down Button Style */
 .image-grid-item .toggle-context {
     position: absolute; /* Position relative to the image-grid-item */
-    bottom: 5px; /* 5px from the bottom */
-    right: 5px; /* 5px from the right */
+    bottom: 5px; 
+    right: 5px; 
     background: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
-    color: white; /* White color for the arrow icon */
-    border: none; /* No border */
-    padding: 5px; /* Padding around the arrow icon */
-    cursor: pointer; /* Pointer cursor on hover */
+    color: white; 
+    border: none; 
+    padding: 5px; 
+    cursor: pointer; 
 }
 
 /* Bottom Navigation Bar */

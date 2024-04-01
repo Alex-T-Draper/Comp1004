@@ -650,7 +650,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 
-    // Form submission event listeners
+    // Form submission event listeners (Sign in and Sign up)
     document.getElementById('signUpForm').addEventListener('submit', async function(event) {
         event.preventDefault(); // Prevent the default form submission behavior
     
@@ -676,13 +676,13 @@ document.addEventListener('DOMContentLoaded', async function() {
         const auth = getAuth();
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                // Signed up successfully
+                // Create new user
                 const user = userCredential.user;
                 console.log('User created:', user.uid);
     
                 closeSignUpModal();
                 document.getElementById('signUpForm').reset();
-    
+                // Successful
                 alert('You have successfully signed up and are now logged in.');
             })
             .catch((error) => {
