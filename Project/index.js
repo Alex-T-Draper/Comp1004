@@ -202,7 +202,7 @@ async function submitComment(docId) {
         await addDoc(commentsRef, {
             text: commentText,
             user: user.email, 
-            timestamp: serverTimestamp() // Firebase server timestamp
+            timestamp: serverTimestamp() // Firebase server timestamp for comment ordering
         });
   
       // Clear the comment input field
