@@ -470,7 +470,7 @@ async function updateImageDetails(docId, updatedData, oldCategory) {
     }
 }
 
-// Function to delete a post and comments
+// Function to delete a post and subcollection
 async function deletePost(docId) {
     const confirmation = confirm('Are you sure you want to delete this post?');
 
