@@ -487,12 +487,18 @@ async function deletePost(docId) {
 
     // Reference to the comments subcollection of the image
     const commentsCollectionRef = collection(db, `images/${docId}/comments`);
+    const reactionsCollectionRef = collection(db, `images/${docId}/reactions`);
 
     try {
         // Get all comments associated with the image
         const commentsSnapshot = await getDocs(commentsCollectionRef);
         commentsSnapshot.forEach((commentDoc) => {
             batch.delete(commentDoc.ref);
+        });
+
+        const reactionsSnapshot = await getDocs(reactionsCollectionRef);
+        reactionsSnapshot.forEach((reactionDoc) => {
+            batch.delete(reactionDoc.ref);
         });
 
         // Commit the batch to delete the image and all comments
@@ -504,7 +510,7 @@ async function deletePost(docId) {
             imageElement.remove();
         }
     } catch (error) {
-        console.error('Error deleting post and comments:', error);
+        console.error('Error deleting post and subcollection:', error);
         alert('An error occurred while trying to delete the post.');
     }
 }
