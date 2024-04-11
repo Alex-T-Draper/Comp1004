@@ -490,7 +490,7 @@ async function deletePost(docId) {
     const reactionsCollectionRef = collection(db, `images/${docId}/reactions`);
 
     try {
-        // Get all comments associated with the image
+        // Get all comments and reactions associated with the image
         const commentsSnapshot = await getDocs(commentsCollectionRef);
         commentsSnapshot.forEach((commentDoc) => {
             batch.delete(commentDoc.ref);
