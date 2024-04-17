@@ -85,10 +85,12 @@ async function displayImagesByCategory(categoryName) {
 
 // Like and dislike button function
 async function updateLikes(docId, userId, isLike) {
+    // Reference to the document of the image
     const imageDocRef = doc(db, 'images', docId);
     const userReactionRef = doc(db, `images/${docId}/reactions`, userId);
 
     try {
+        // Perform transaction to update likes/dislikes atomically
         const transactionResult = await runTransaction(db, async (transaction) => {
             const imageDoc = await transaction.get(imageDocRef);
             const userReaction = await transaction.get(userReactionRef);
@@ -96,6 +98,7 @@ async function updateLikes(docId, userId, isLike) {
                 throw new Error("Document does not exist!");
             }
 
+            // Retrieve likes, dislikes, and user reaction data
             const data = imageDoc.data();
             let likes = data.likes;
             let dislikes = data.dislikes;
@@ -133,7 +136,7 @@ async function updateLikes(docId, userId, isLike) {
                     reactionData.dislike = true;
                 }
             }
-
+            // Update the image document with new like/dislike counts
             transaction.update(imageDocRef, { likes, dislikes });
             transaction.set(userReactionRef, reactionData);
 
@@ -155,6 +158,7 @@ async function updateLikes(docId, userId, isLike) {
 
 // Display Comment Function
 async function displayComments(docId) {
+    // Access Container
     const commentsContainer = document.getElementById(`comments-container-${docId}`);
     const commentsRef = collection(db, `images/${docId}/comments`);
     const q = query(commentsRef, orderBy("timestamp", "asc")); // Order by timestamp
@@ -162,7 +166,8 @@ async function displayComments(docId) {
 
     // Clear previous comments
     commentsContainer.innerHTML = '';
-  
+
+    // Loop through each comment in the snapshot
     querySnapshot.forEach((doc) => {
         const commentData = doc.data();
         const commentElement = document.createElement('p');
@@ -173,8 +178,11 @@ async function displayComments(docId) {
 
 // Submit Comment function
 async function submitComment(docId) {
+    // Access the comment input field and retrieve the trimmed text
     const commentInput = document.getElementById(`comment-input-${docId}`);
     const commentText = commentInput.value.trim();
+
+    // Get the current authenticated user
     const auth = getAuth();
     const user = auth.currentUser;
 
@@ -182,6 +190,7 @@ async function submitComment(docId) {
     const maxWordLimit = 100;
     const wordCount = commentText.split(/\s+/).length; 
     
+    // Validation checks
     if (commentText === '') {
       alert('Comment cannot be empty.');
       return;
@@ -198,7 +207,9 @@ async function submitComment(docId) {
     }
 
     try {
+        // Reference to the comments collection of the image
         const commentsRef = collection(db, `images/${docId}/comments`);
+        // Add a new document to the comments collection with the comment text and user info
         await addDoc(commentsRef, {
             text: commentText,
             user: user.email, 
@@ -218,6 +229,7 @@ async function submitComment(docId) {
 
 // Function to open the image context modal with relevent data
 async function openImageContextModal(docId) {
+    // Access modal and content elements from the DOM
     const contextModal = document.getElementById('imageContextModal');
     const contextContent = document.getElementById('imageContextContent');
 
@@ -225,7 +237,7 @@ async function openImageContextModal(docId) {
     const imageDocRef = doc(db, 'images', docId);
     const imageDocSnap = await getDoc(imageDocRef);
     
-
+    // Check if the document for the image exists
     if (imageDocSnap.exists()) {
         const data = imageDocSnap.data();
         const uploadDate = new Date(data.uploadDate);
@@ -243,7 +255,7 @@ async function openImageContextModal(docId) {
             editButtonHtml = `<button id="editButton-${docId}" class="edit-button">Edit Details</button>`;
         }
 
-        // Load the content for the image
+        // Load HTML content dynamically based on image data
         const dynamicContentHtml = `
             <h3 class="image-detail image-imageName">${data.imageName}</h3>
             <h4 class="image-detail image-category">${data.category}</h4>
@@ -329,6 +341,7 @@ async function openImageContextModal(docId) {
 
         // Check the user's reaction if logged in
         if (user) {
+            // If user is logged in, fetch and apply user-specific reaction styles
             const userReactionRef = doc(db, `images/${docId}/reactions`, user.uid);
             const userReactionSnap = await getDoc(userReactionRef);
             if (userReactionSnap.exists()) {
@@ -448,18 +461,21 @@ function toggleEdit(docId, buttonElement) {
 
 // Firestore update on edit
 async function updateImageDetails(docId, updatedData, oldCategory) {
+    // Reference to the specific image document in Firestore
     const imageDocRef = doc(db, 'images', docId);
     
     try {
+        // Perform the update operation on the Firestore document
         await updateDoc(imageDocRef, updatedData);
         alert('Image details updated successfully.');
 
         // Check if category has changed and remove the image from the old category
         if (oldCategory !== updatedData.category) {
+            // If the category changed, remove the image from the old category display
             const oldCategoryContainer = document.querySelector(`.${oldCategory}-images`);
             const imageElement = oldCategoryContainer ? oldCategoryContainer.querySelector(`[data-id="${docId}"]`) : null;
             if (imageElement) {
-                oldCategoryContainer.removeChild(imageElement); 
+                oldCategoryContainer.removeChild(imageElement); // Remove image from old contanier
             }
             await displayImagesByCategory(updatedData.category);
         }
@@ -553,6 +569,7 @@ function highlightNavButton() {
     // No section is active initially
     let activeSectionFound = false;
 
+    // Loop through each navigation button
     navButtons.forEach(button => {
         const targetId = button.getAttribute('data-target');
         const section = document.getElementById(targetId);
@@ -561,6 +578,7 @@ function highlightNavButton() {
             const sectionTop = section.offsetTop - navbarHeight;
             const sectionBottom = sectionTop + section.offsetHeight;
 
+            // Check if the current scroll position is within this section
             if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
                 button.classList.add('active');
                 activeSectionFound = true;
@@ -600,6 +618,7 @@ function makeNavbarSticky() {
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
+    // Setup listener for authentication state changes
     onAuthStateChangedListener();
 
     // Modal triggers
@@ -727,10 +746,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // Image Upload
     document.getElementById('imageUpload').addEventListener('change', function(event) {
+        // New FileReader to handle the file reading
         var reader = new FileReader();
         reader.onload = function() {
             var output = document.getElementById('imagePreview');
             output.src = reader.result;
+            // Make the image preview visible
             output.style.display = 'block';
         };
         reader.readAsDataURL(event.target.files[0]);
@@ -739,10 +760,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('imageUploadForm').addEventListener('submit', async function(event) {
         event.preventDefault();
 
+        // Disable upload button
         const submitButton = document.getElementById('buttonUpload');
         submitButton.disabled = true;
         submitButton.textContent = 'Uploading...';
 
+        // Access the current user from Firebase Authentication
         const auth = getAuth();
         const user = auth.currentUser;
 
@@ -795,10 +818,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     
         if (file) {
             try {
+                // Define storage references and upload the file
                 const imageRef = storageRef(storage, `images/${file.name}`);
                 const snapshot = await uploadBytes(imageRef, file);
                 const url = await getDownloadURL(imageRef);
-    
+                
+                // Create a document in Firestore to store image data
                 const imagesCollectionRef = collection(db, 'images');
                 const docRef = await addDoc(imagesCollectionRef, {
                     fileName: file.name,
@@ -815,11 +840,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     
                 console.log('Document written with ID: ', docRef.id);
                 alert('Image uploaded successfully!');
-    
-                document.getElementById('imageUploadForm').reset();
 
+                // Reset the form and close the modal
+                document.getElementById('imageUploadForm').reset();
                 document.getElementById('imagePreview').style.display = 'none';
                 closeUploadModal();
+
                 // Update Images on page
                 await displayImagesByCategory(category);
     
@@ -830,7 +856,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         } else {
             alert('Please select a file to upload.');
         }
-
+        
+        // Re-enable the submit button
         submitButton.disabled = false;
         submitButton.textContent = 'Upload';
         modal.style.display = "none";
