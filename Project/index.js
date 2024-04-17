@@ -158,9 +158,11 @@ async function updateLikes(docId, userId, isLike) {
 
 // Display Comment Function
 async function displayComments(docId) {
-    // Access Container
+    // Access Container and Reference comments collection
     const commentsContainer = document.getElementById(`comments-container-${docId}`);
     const commentsRef = collection(db, `images/${docId}/comments`);
+
+    // Query to retrieve comments
     const q = query(commentsRef, orderBy("timestamp", "asc")); // Order by timestamp
     const querySnapshot = await getDocs(q);
 
@@ -856,7 +858,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         } else {
             alert('Please select a file to upload.');
         }
-        
+
         // Re-enable the submit button
         submitButton.disabled = false;
         submitButton.textContent = 'Upload';
