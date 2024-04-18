@@ -25,7 +25,7 @@ This project is ready to run. You will need the 'Live Server' extension on Visua
 2. **Open the Project**: Load the files to Visual Studio Code.
 3. **Install Live Server**: Install the Live Server extension on your Visual Studio Code.
 ![image](https://github.com/Alex-T-Draper/Comp1004/assets/108327378/8fee9905-5425-491f-b0b8-af5fae8a6ddd)
-5. **Press 'Go Live'**: Once you have installed Live Server, open index.js and press 'Go Live' on the bottom right of your Visual Studio Code, then start exploring the functionalities.
+5. **Press 'Go Live'**: Once you have installed Live Server, open index.html and press 'Go Live' on the bottom right of your Visual Studio Code, then start exploring the functionalities.
 ![tempsnip](https://github.com/Alex-T-Draper/Comp1004/assets/108327378/58437840-156f-4abe-9bfa-dbb08de94418)
 6. **Alternatively**: Use this link to access the SPA directly where it is hosted: https://comp1004-azure.vercel.app/
 
